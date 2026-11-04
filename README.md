@@ -4,7 +4,7 @@ Dit is de repository waarin de prototypes die wij voor Zwijsen gemaakt hebben in
 
 ## Over het project
 
-Groepsproject (Fontys, semester 4 – Open Learning) waarin we met z'n vieren het leerplatform dat Zwijsen aan scholen levert proberen te moderniseren. In deze repo verzamelen we de prototypes die we daarvoor bouwen.
+Groepsproject (Fontys, Semester 4) waarin we met z'n vieren het leerplatform dat Zwijsen aan scholen levert proberen te moderniseren. In deze repo verzamelen we de prototypes die we daarvoor bouwen.
 
 ### Probleemstelling
 
