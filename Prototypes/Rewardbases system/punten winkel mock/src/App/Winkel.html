@@ -1,0 +1,599 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puntenwinkel - Zwijsen</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f6fc;
+            color: #30334a;
+        }
+
+        /* Navigatie */
+        .navbar {
+            background: white;
+            padding: 18px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px #00000008;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 800;
+            color: #6558d3;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .balance {
+            background: #fff4d7;
+            color: #a66b00;
+            padding: 11px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #e8e3ff;
+            display: grid;
+            place-items: center;
+            font-size: 23px;
+        }
+
+        /* Pagina */
+        .container {
+            max-width: 1150px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .hero {
+            background: linear-gradient(120deg, #7669e8, #a58af4);
+            padding: 35px;
+            border-radius: 22px;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            opacity: .9;
+            line-height: 1.6;
+        }
+
+        .hero span {
+            font-size: 45px;
+            float: right;
+        }
+
+        /* Categorieën */
+        .section-title {
+            margin-bottom: 18px;
+            font-size: 22px;
+        }
+
+        .categories {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .category {
+            border: none;
+            background: white;
+            padding: 11px 19px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            transition: .2s;
+        }
+
+        .category:hover,
+        .category.active {
+            background: #7063df;
+            color: white;
+        }
+
+        /* Producten */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .product {
+            background: white;
+            border-radius: 18px;
+            padding: 17px;
+            box-shadow: 0 4px 15px #00000008;
+            transition: transform .2s;
+        }
+
+        .product:hover {
+            transform: translateY(-4px);
+        }
+
+        .product-image {
+            height: 145px;
+            background: #f0efff;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            font-size: 65px;
+            margin-bottom: 15px;
+        }
+
+        .product h3 {
+            margin-bottom: 7px;
+        }
+
+        .product p {
+            color: #85859a;
+            font-size: 13px;
+            min-height: 35px;
+            line-height: 1.5;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            gap: 8px;
+        }
+
+        .price {
+            color: #ad7900;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .buy-button {
+            border: none;
+            background: #7063df;
+            color: white;
+            padding: 10px 17px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .buy-button:hover {
+            background: #594ac8;
+        }
+
+        .buy-button:disabled {
+            background: #c6c6d3;
+            cursor: not-allowed;
+        }
+
+        .owned {
+            background: #e5f7eb;
+            color: #278b50;
+            padding: 9px 12px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Inventaris */
+        .inventory {
+            background: white;
+            border-radius: 18px;
+            padding: 22px;
+            margin-top: 35px;
+        }
+
+        .inventory-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .inventory-item {
+            background: #f0efff;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .inventory-item button {
+            border: none;
+            background: #7063df;
+            color: white;
+            padding: 7px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .inventory-item.equipped {
+            background: #e5f7eb;
+        }
+
+        .empty {
+            color: #999;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .notice {
+            margin-top: 18px;
+            padding: 13px;
+            background: #e9f7ed;
+            color: #267c45;
+            border-radius: 10px;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 35px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        @media (max-width: 750px) {
+            .products {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero h1 {
+                font-size: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding: 25px;
+            }
+
+            .hero span {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navigatie -->
+<nav class="navbar">
+    <div class="logo">✨ Leerwereld</div>
+
+    <div class="nav-right">
+        <div class="balance">
+            ⭐ <span id="points">1250</span> punten
+        </div>
+        <div class="avatar">😊</div>
+    </div>
+</nav>
+
+<main class="container">
+
+    <!-- Welkomstgedeelte -->
+    <section class="hero">
+        <span>🛍️</span>
+        <h1>Welkom in de puntenwinkel!</h1>
+        <p>
+            Goed bezig met leren! Gebruik je verdiende punten
+            om jouw account helemaal naar jouw smaak te maken.
+        </p>
+    </section>
+
+    <!-- Categorieën -->
+    <h2 class="section-title">Ontdek de winkel 🛒</h2>
+
+    <div class="categories">
+        <button class="category active" onclick="filterProducts('all', this)">Alles</button>
+        <button class="category" onclick="filterProducts('profile', this)">👤 Profiel</button>
+        <button class="category" onclick="filterProducts('background', this)">🎨 Achtergronden</button>
+        <button class="category" onclick="filterProducts('badges', this)">🏆 Badges</button>
+        <button class="category" onclick="filterProducts('extra', this)">✨ Extra's</button>
+    </div>
+
+    <!-- Producten -->
+    <div class="products" id="products"></div>
+
+    <!-- Inventaris -->
+    <section class="inventory">
+        <h2>🎒 Mijn verzameling</h2>
+        <p style="color:#888; margin-top:5px; font-size:14px">
+            Hier vind je alle producten die je hebt gekocht.
+        </p>
+
+        <div class="inventory-items" id="inventory"></div>
+
+        <div class="notice" id="notice"></div>
+    </section>
+
+</main>
+
+<footer>
+    Leerwereld © 2026 - Blijf leren en verdien beloningen! ⭐
+</footer>
+
+<script>
+
+    // Producten in de winkel
+    const products = [
+        {
+            id: 1,
+            name: "Roze profielrand",
+            description: "Geef je profielfoto een mooie roze rand.",
+            emoji: "🩷",
+            price: 100,
+            category: "profile"
+        },
+        {
+            id: 2,
+            name: "Gouden profielrand",
+            description: "Een speciale gouden rand voor je profiel.",
+            emoji: "👑",
+            price: 350,
+            category: "profile"
+        },
+        {
+            id: 3,
+            name: "Coole avatar",
+            description: "Een nieuwe avatar voor jouw account.",
+            emoji: "😎",
+            price: 200,
+            category: "profile"
+        },
+        {
+            id: 4,
+            name: "Galaxy achtergrond",
+            description: "Een mooie achtergrond met sterren.",
+            emoji: "🌌",
+            price: 250,
+            category: "background"
+        },
+        {
+            id: 5,
+            name: "Oceaan achtergrond",
+            description: "Een rustige blauwe achtergrond.",
+            emoji: "🌊",
+            price: 150,
+            category: "background"
+        },
+        {
+            id: 6,
+            name: "Regenboog achtergrond",
+            description: "Een vrolijke kleurrijke achtergrond.",
+            emoji: "🌈",
+            price: 200,
+            category: "background"
+        },
+        {
+            id: 7,
+            name: "Eerste prestatie",
+            description: "Een badge voor jouw profiel.",
+            emoji: "🥇",
+            price: 100,
+            category: "badges"
+        },
+        {
+            id: 8,
+            name: "Leerheld badge",
+            description: "Laat zien dat je een echte leerheld bent.",
+            emoji: "🦸",
+            price: 300,
+            category: "badges"
+        },
+        {
+            id: 9,
+            name: "Sterrenverzamelaar",
+            description: "Een speciale badge voor je profiel.",
+            emoji: "⭐",
+            price: 400,
+            category: "badges"
+        },
+        {
+            id: 10,
+            name: "Glitter effect",
+            description: "Laat glitters verschijnen op je profiel.",
+            emoji: "✨",
+            price: 250,
+            category: "extra"
+        },
+        {
+            id: 11,
+            name: "Unieke naamkleur",
+            description: "Geef je gebruikersnaam een andere kleur.",
+            emoji: "🎨",
+            price: 150,
+            category: "extra"
+        },
+        {
+            id: 12,
+            name: "Speciale titel",
+            description: "Laat een titel naast je naam verschijnen.",
+            emoji: "🏅",
+            price: 300,
+            category: "extra"
+        }
+    ];
+
+    // Demo-account
+    let points = Number(localStorage.getItem("shopPoints")) || 1250;
+    let owned = JSON.parse(localStorage.getItem("shopOwned")) || [];
+    let equipped = JSON.parse(localStorage.getItem("shopEquipped")) || [];
+
+    function save() {
+        localStorage.setItem("shopPoints", points);
+        localStorage.setItem("shopOwned", JSON.stringify(owned));
+        localStorage.setItem("shopEquipped", JSON.stringify(equipped));
+    }
+
+    function updatePoints() {
+        document.getElementById("points").textContent = points;
+    }
+
+    function renderProducts(category = "all") {
+        const container = document.getElementById("products");
+        container.innerHTML = "";
+
+        const filtered = products.filter(product =>
+            category === "all" || product.category === category
+        );
+
+        filtered.forEach(product => {
+            const isOwned = owned.includes(product.id);
+
+            container.innerHTML += `
+                <article class="product">
+                    <div class="product-image">
+                        ${product.emoji}
+                    </div>
+
+                    <h3>${product.name}</h3>
+                    <p>${product.description}</p>
+
+                    <div class="product-footer">
+                        <span class="price">⭐ ${product.price}</span>
+
+                        ${
+                            isOwned
+                            ? '<span class="owned">✓ Gekocht</span>'
+                            : `<button class="buy-button"
+                                onclick="buyProduct(${product.id})">
+                                Kopen
+                               </button>`
+                        }
+                    </div>
+                </article>
+            `;
+        });
+    }
+
+    // Producten filteren
+    function filterProducts(category, button) {
+        document.querySelectorAll(".category").forEach(btn => {
+            btn.classList.remove("active");
+        });
+
+        button.classList.add("active");
+        renderProducts(category);
+    }
+
+    // Product kopen
+    function buyProduct(id) {
+        const product = products.find(p => p.id === id);
+
+        if (owned.includes(id)) return;
+
+        if (points < product.price) {
+            showNotice("❌ Je hebt niet genoeg punten!");
+            return;
+        }
+
+        const confirmed = confirm(
+            `Wil je ${product.name} kopen voor ${product.price} punten?`
+        );
+
+        if (!confirmed) return;
+
+        points -= product.price;
+        owned.push(id);
+
+        save();
+        updatePoints();
+        renderProducts();
+        renderInventory();
+
+        showNotice(`🎉 Je hebt ${product.name} gekocht!`);
+    }
+
+    // Inventaris weergeven
+    function renderInventory() {
+        const container = document.getElementById("inventory");
+
+        if (owned.length === 0) {
+            container.innerHTML =
+                '<p class="empty">Je hebt nog geen producten gekocht.</p>';
+            return;
+        }
+
+        container.innerHTML = "";
+
+        owned.forEach(id => {
+            const product = products.find(p => p.id === id);
+            const active = equipped.includes(id);
+
+            container.innerHTML += `
+                <div class="inventory-item ${active ? 'equipped' : ''}">
+                    <span>${product.emoji} ${product.name}</span>
+                    <button onclick="toggleEquip(${id})">
+                        ${active ? "Uitzetten" : "Activeren"}
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    // Product activeren of uitzetten
+    function toggleEquip(id) {
+        if (equipped.includes(id)) {
+            equipped = equipped.filter(item => item !== id);
+        } else {
+            equipped.push(id);
+        }
+
+        save();
+        renderInventory();
+        showNotice("✨ Je uitrusting is bijgewerkt!");
+    }
+
+    // Melding weergeven
+    function showNotice(message) {
+        const notice = document.getElementById("notice");
+        notice.textContent = message;
+        notice.style.display = "block";
+
+        setTimeout(() => {
+            notice.style.display = "none";
+        }, 3000);
+    }
+
+    // Winkel starten
+    updatePoints();
+    renderProducts();
+    renderInventory();
+
+</script>
+
+</body>
+</html>
