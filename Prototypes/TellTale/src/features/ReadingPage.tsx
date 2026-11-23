@@ -1,6 +1,7 @@
 import {
   Check,
   ChevronRight,
+  Droplet,
   Highlighter,
   Lightbulb,
   Lock,
@@ -13,7 +14,17 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { loadProgress, recordRead, type StoryProgress } from '../engine/progress'
-import { activeTraces, clueMarked, duskLevel, splitSentences, timeOfDay, type Mark } from '../engine/reading'
+import {
+  activeTraces,
+  clueMarked,
+  duskLevel,
+  INK_PER_PAGE,
+  inkLeft,
+  markAccuracy,
+  splitSentences,
+  timeOfDay,
+  type Mark,
+} from '../engine/reading'
 import {
   bestScore,
   collectFlags,
@@ -179,6 +190,8 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
   const [decisions, setDecisions] = useState<Decision[]>([])
   const [marks, setMarks] = useState<Mark[]>([])
   const [highlighter, setHighlighter] = useState(true)
+  /** Set when the child tries to mark a sentence without ink left. */
+  const [inkOut, setInkOut] = useState(false)
   const [showEnding, setShowEnding] = useState(false)
   /** At a decision, the question only appears after reading, and then the text is gone. */
   const [questionOpen, setQuestionOpen] = useState(false)
@@ -210,6 +223,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
     setCurrentNodeId(nodeId)
     setVisited(previous => [...previous, nodeId])
     setQuestionOpen(false)
+    setInkOut(false)
   }
 
   const choose = (choiceIndex: number) => {
@@ -222,11 +236,14 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
   const toggleMark = (text: string) => {
     if (!currentNode) return
     const isThis = (mark: Mark) => mark.nodeId === currentNodeId && mark.text === text
-    setMarks(previous =>
-      previous.some(isThis)
-        ? previous.filter(mark => !isThis(mark))
-        : [...previous, { nodeId: currentNodeId, chapter: currentNode.chapter, text }],
-    )
+    if (marks.some(isThis)) {
+      setMarks(marks.filter(mark => !isThis(mark)))
+      setInkOut(false)
+    } else if (inkLeft(marks, currentNodeId) === 0) {
+      setInkOut(true)
+    } else {
+      setMarks([...marks, { nodeId: currentNodeId, chapter: currentNode.chapter, text }])
+    }
   }
 
   const restartStory = () => {
@@ -238,9 +255,11 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
     setMarks([])
     setShowEnding(false)
     setQuestionOpen(false)
+    setInkOut(false)
     recorded.current = false
   }
 
+  const ink = inkLeft(marks, currentNodeId)
   const pageClass = `reading-page ${story.dusk ? 'has-sky' : ''}`
   const pageStyle = { '--dusk': dusk } as CSSProperties
 
@@ -259,10 +278,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
 
   if (ending) {
     const gained = previousRead ? points - previousRead.lastScore : 0
-    const markedClues = decisions.filter(decision => {
-      const node = decisionNode(story, decision.nodeId)
-      return node ? clueMarked(node.variants[playthrough[decision.nodeId] ?? 0].clue, marks, decision.nodeId) : false
-    }).length
+    const accuracy = markAccuracy(story, playthrough, marks)
     return (
       <main className={pageClass} style={pageStyle}>
         <div className="reading-layout">
@@ -284,9 +300,12 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                 {marks.length > 0 && (
                   <p className="marked-summary">
                     <Highlighter size={18} aria-hidden="true" />
-                    {markedClues === 0
-                      ? 'Je hebt zinnen gemarkeerd, maar nog niet de aanwijzingen. Kijk hieronder waar ze stonden.'
-                      : `Je markeerde ${markedClues} van de ${total} aanwijzingen.`}
+                    Je markeerde {accuracy.marked} {accuracy.marked === 1 ? 'zin' : 'zinnen'}.{' '}
+                    {accuracy.onClue === 0
+                      ? 'Daar zat nog geen aanwijzing bij. Kijk hieronder waar ze stonden.'
+                      : accuracy.onClue === accuracy.marked
+                        ? `${accuracy.marked === 1 ? 'Dat was een aanwijzing' : 'Dat waren allemaal aanwijzingen'}. Knap gekozen!`
+                        : `${accuracy.onClue} daarvan ${accuracy.onClue === 1 ? 'was een aanwijzing' : 'waren aanwijzingen'}.`}
                   </p>
                 )}
                 {previousRead && (
@@ -373,6 +392,11 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
           >
             <Highlighter size={20} aria-hidden="true" />
             Markeerstift
+            <span className="ink" role="img" aria-label={`Nog ${ink} van ${INK_PER_PAGE} strepen`}>
+              {Array.from({ length: INK_PER_PAGE }, (_, index) => (
+                <Droplet key={index} size={14} className={index < ink ? 'is-full' : ''} aria-hidden="true" />
+              ))}
+            </span>
           </button>
           <OnTheWay story={story} flags={flags} dusk={dusk} />
         </aside>
@@ -388,8 +412,14 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                 {currentNodeId === story.startNode && marks.length === 0 && (
                   <p className="highlight-hint">
                     <Highlighter size={18} aria-hidden="true" />
-                    Let op: als je klaar bent met lezen, verdwijnt de tekst. Tik op de zinnen die belangrijk zijn, dan
-                    bewaar je ze in je speurdersboekje.
+                    Let op: als je klaar bent met lezen, verdwijnt de tekst. Je markeerstift heeft {INK_PER_PAGE} strepen
+                    per bladzijde. Tik op de zinnen die het belangrijkst zijn, dan bewaar je ze in je speurdersboekje.
+                  </p>
+                )}
+                {inkOut && (
+                  <p className="ink-message" role="status">
+                    <Droplet size={18} aria-hidden="true" />
+                    Je inkt is op. Tik op een gemarkeerde zin om hem weg te halen, dan kun je een andere kiezen.
                   </p>
                 )}
                 <Paragraphs

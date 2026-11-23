@@ -887,3 +887,41 @@
     flex-wrap: wrap;
   }
 }
+
+/* Ink: the highlighter has a few strokes per page, so the child has to choose */
+.ink {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 2px;
+}
+
+.ink svg {
+  color: var(--ink-soft);
+  opacity: 0.45;
+}
+
+.ink svg.is-full {
+  fill: var(--ink);
+  color: var(--ink);
+  opacity: 1;
+}
+
+.ink-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 16px 48px 0;
+  padding: 8px 14px;
+  border-radius: var(--radius-small);
+  background: var(--red-soft);
+  color: var(--red);
+  font-size: 15px;
+  animation: trace-in 300ms ease;
+}
+
+@media (max-width: 760px) {
+  .ink-message {
+    margin: 12px 20px 0;
+  }
+}

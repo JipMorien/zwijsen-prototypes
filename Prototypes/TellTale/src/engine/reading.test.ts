@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { stories } from '../prototype-data/stories'
-import { activeTraces, clueMarked, duskLevel, splitSentences, type Mark } from './reading'
+import { activeTraces, clueMarked, duskLevel, INK_PER_PAGE, inkLeft, markAccuracy, splitSentences, type Mark } from './reading'
 import { renderText, storyVars, type Decision } from './story'
 
 const mark = (text: string, nodeId = 'n'): Mark => ({ nodeId, chapter: '', text })
@@ -63,5 +63,24 @@ describe('duskLevel', () => {
     expect(duskLevel(decided(true, true, true, true, true), 5)).toBeCloseTo(0.35)
     expect(duskLevel(decided(false, false, false, false, false), 5)).toBe(1)
     expect(duskLevel([], 5)).toBe(0)
+  })
+})
+
+describe('ink', () => {
+  it('gives every page its own ink', () => {
+    const marks = [mark('Een.', 'a'), mark('Twee.', 'a'), mark('Drie.', 'b')]
+    expect(inkLeft(marks, 'a')).toBe(0)
+    expect(inkLeft(marks, 'b')).toBe(INK_PER_PAGE - 1)
+    expect(inkLeft(marks, 'c')).toBe(INK_PER_PAGE)
+  })
+})
+
+describe('markAccuracy', () => {
+  it('counts which marks were on a clue', () => {
+    const story = stories[0]
+    const playthrough = { start: 0 }
+    const clue = story.nodes.start.kind === 'decision' ? story.nodes.start.variants[0].clue : ''
+    const marks = [mark(splitSentences(clue)[0], 'start'), mark('Op een zonnige ochtend loopt Mila het Fluisterbos in.', 'start')]
+    expect(markAccuracy(story, playthrough, marks)).toEqual({ marked: 2, onClue: 1 })
   })
 })

@@ -1,5 +1,5 @@
 import type { Story, Trace } from '../types/story'
-import type { Decision } from './story'
+import { decisionNode, type Decision, type Playthrough } from './story'
 
 /** A sentence the child marked with the highlighter. */
 export type Mark = {
@@ -61,4 +61,20 @@ export function timeOfDay(dusk: number): string {
   if (dusk < 0.55) return 'Middag'
   if (dusk < 0.8) return 'Het wordt al laat'
   return 'Bijna donker'
+}
+
+/** How many sentences a child can mark on one page. Every clue can be marked with one. */
+export const INK_PER_PAGE = 2
+
+export function inkLeft(marks: Mark[], nodeId: string): number {
+  return Math.max(0, INK_PER_PAGE - marks.filter(mark => mark.nodeId === nodeId).length)
+}
+
+/** How many marks the child made, and how many of them were (part of) a clue. */
+export function markAccuracy(story: Story, playthrough: Playthrough, marks: Mark[]): { marked: number; onClue: number } {
+  const onClue = marks.filter(mark => {
+    const node = decisionNode(story, mark.nodeId)
+    return node ? clueMarked(node.variants[playthrough[mark.nodeId] ?? 0].clue, [mark], mark.nodeId) : false
+  }).length
+  return { marked: marks.length, onClue }
 }
