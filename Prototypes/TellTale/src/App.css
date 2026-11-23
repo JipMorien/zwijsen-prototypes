@@ -332,6 +332,23 @@
   color: var(--ink);
 }
 
+.tool-button:disabled {
+  opacity: 0.45;
+}
+
+/* The question replaces the text, so it slides in where the text was */
+.decision.is-open {
+  margin-top: 24px;
+  animation: question-in 350ms ease;
+}
+
+@keyframes question-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 .on-the-way {
   padding: 12px 14px 14px;
   border-radius: var(--radius-small);

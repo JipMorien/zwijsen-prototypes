@@ -180,6 +180,8 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
   const [marks, setMarks] = useState<Mark[]>([])
   const [highlighter, setHighlighter] = useState(true)
   const [showEnding, setShowEnding] = useState(false)
+  /** At a decision, the question only appears after reading, and then the text is gone. */
+  const [questionOpen, setQuestionOpen] = useState(false)
   const [previousRead, setPreviousRead] = useState<StoryProgress | undefined>(() => loadProgress(story.id))
   const recorded = useRef(false)
 
@@ -195,7 +197,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [currentNodeId, showEnding])
+  }, [currentNodeId, showEnding, questionOpen])
 
   useEffect(() => {
     if (!ending || recorded.current) return
@@ -207,6 +209,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
     if (!nodeId || !story.nodes[nodeId]) return
     setCurrentNodeId(nodeId)
     setVisited(previous => [...previous, nodeId])
+    setQuestionOpen(false)
   }
 
   const choose = (choiceIndex: number) => {
@@ -234,6 +237,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
     setDecisions([])
     setMarks([])
     setShowEnding(false)
+    setQuestionOpen(false)
     recorded.current = false
   }
 
@@ -364,6 +368,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
           <button
             className={`tool-button ${highlighter ? 'is-on' : ''}`}
             aria-pressed={highlighter}
+            disabled={questionOpen}
             onClick={() => setHighlighter(on => !on)}
           >
             <Highlighter size={20} aria-hidden="true" />
@@ -378,23 +383,37 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
               <h1>{render(currentNode.title)}</h1>
               <ChoiceDots made={decisions.length} total={total} />
             </div>
-            {highlighter && currentNodeId === story.startNode && marks.length === 0 && (
-              <p className="highlight-hint">
-                <Highlighter size={18} aria-hidden="true" />
-                Tik op een zin om hem te markeren. Markeer wat belangrijk is!
-              </p>
+            {!questionOpen && (
+              <>
+                {currentNodeId === story.startNode && marks.length === 0 && (
+                  <p className="highlight-hint">
+                    <Highlighter size={18} aria-hidden="true" />
+                    Let op: als je klaar bent met lezen, verdwijnt de tekst. Tik op de zinnen die belangrijk zijn, dan
+                    bewaar je ze in je speurdersboekje.
+                  </p>
+                )}
+                <Paragraphs
+                  text={render(currentNode.text)}
+                  marking={{ nodeId: currentNodeId, marks, highlighter, onToggle: toggleMark }}
+                />
+              </>
             )}
-            <Paragraphs
-              text={render(currentNode.text)}
-              marking={{ nodeId: currentNodeId, marks, highlighter, onToggle: toggleMark }}
-            />
 
-            {currentNode.kind === 'decision' && (
-              <section className="decision" aria-labelledby="decision-question">
+            {currentNode.kind === 'decision' && !questionOpen && (
+              <div className="paper-footer">
+                <button className="button-primary" onClick={() => setQuestionOpen(true)}>
+                  Klaar met lezen
+                  <ChevronRight size={20} aria-hidden="true" />
+                </button>
+              </div>
+            )}
+
+            {currentNode.kind === 'decision' && questionOpen && (
+              <section className="decision is-open" aria-labelledby="decision-question">
                 <h2 id="decision-question">{currentNode.question}</h2>
                 <p className="decision-tip">
                   <Lightbulb size={18} aria-hidden="true" />
-                  Lees goed: in de tekst staat wat slim is.
+                  De tekst is weg. Wat weet je nog? In je speurdersboekje staan de zinnen die jij hebt gemarkeerd.
                 </p>
                 <Notebook marks={marks} />
                 <ul className="choice-list">
