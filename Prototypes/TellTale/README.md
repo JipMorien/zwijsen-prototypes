@@ -1,75 +1,32 @@
-# React + TypeScript + Vite
+# TellTale
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Concept
+Interactieve verhalen waarin de leerling keuzes maakt. Bij elke keuze staat in de tekst wat slim is om te doen. Wie goed leest, kiest de keuze die past bij de tekst. Wie dat niet doet, krijgt geen "fout!"-scherm: er gaat iets mis in het verhaal, de hoofdpersoon herstelt zich en het verhaal gaat verder.
 
-Currently, two official plugins are available:
+Hoe meer keuzes bij de tekst passen, hoe mooier het einde. Alleen wie alle aanwijzingen vindt, krijgt het geheime einde. Zo zit de motivatie in het lezen zelf (feedback van Zwijsen): het verhaal wordt beter doordat je beter leest.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Aan het einde ziet de leerling een terugblik: welke keuzes bij de tekst pasten, en bij gemiste keuzes de zin waar de aanwijzing stond. Elke keuze hoort bij een tekststructuur (oorzaak en gevolg, volgorde, vergelijken, probleem en oplossing).
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+## Starten
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+| Commando | Wat het doet |
+|---|---|
+| `npm run dev` | Start de app |
+| `npm test` | Controleert de verhalen en de logica |
+| `npm run build` | Typecheck en productiebuild |
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Een verhaal toevoegen
+Verhalen staan in `src/prototype-data/`. Een verhaal bestaat uit delen (`nodes`) van drie soorten:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- `decision`: tekst met een vraag en keuzes. Precies één keuze heeft `fitsText: true`. `clue` is de zin uit de tekst met de aanwijzing, en `structure` de tekststructuur.
+- `passage`: tekst met een knop "Lees verder" naar `next`. Hiermee schrijf je wat er gebeurt na een keuze.
+- `finale`: het laatste stuk tekst. Daarna kiest de app een einde uit `endings` op basis van hoeveel keuzes bij de tekst pasten (`minScore`).
 
-```
+Voeg het verhaal toe aan `src/prototype-data/stories.ts`. `npm test` controleert of het verhaal klopt: alle verwijzingen bestaan, elke aanwijzing staat letterlijk in de tekst, elke route eindigt, elke route heeft evenveel keuzes en elk einde is bereikbaar.
+
+## Bevindingen
+_Nog in te vullen na testen._

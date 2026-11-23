@@ -1,33 +1,43 @@
-import { useState } from 'react'
-import type { Story } from '../types/story'
+import { useEffect, useState } from 'react'
+import { decisionCount, decisionNode, pickEnding, score, type Decision } from '../engine/story'
+import type { Story, TextStructure } from '../types/story'
 
 type ReadingPageProps = {
   story: Story
   onBack: () => void
 }
 
+const structureNames: Record<TextStructure, string> = {
+  'oorzaak-gevolg': 'oorzaak en gevolg',
+  tijdvolgorde: 'volgorde',
+  vergelijken: 'vergelijken',
+  'probleem-oplossing': 'probleem en oplossing',
+}
+
 function ReadingPage({ story, onBack }: ReadingPageProps) {
   const [currentNodeId, setCurrentNodeId] = useState(story.startNode)
-  const [visitedNodes, setVisitedNodes] = useState<string[]>([
-    story.startNode,
-  ])
+  const [decisions, setDecisions] = useState<Decision[]>([])
+  const [showEnding, setShowEnding] = useState(false)
 
   const currentNode = story.nodes[currentNodeId]
+  const total = decisionCount(story)
 
-  const handleChoice = (nextNodeId: string) => {
-    if (!story.nodes[nextNodeId]) return
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [currentNodeId, showEnding])
 
-    setCurrentNodeId(nextNodeId)
-    setVisitedNodes(previous =>
-      previous.includes(nextNodeId)
-        ? previous
-        : [...previous, nextNodeId]
-    )
+  const choose = (choiceIndex: number) => {
+    if (currentNode?.kind !== 'decision') return
+    const choice = currentNode.choices[choiceIndex]
+    if (!story.nodes[choice.next]) return
+    setDecisions(previous => [...previous, { nodeId: currentNodeId, choiceIndex, fitsText: choice.fitsText }])
+    setCurrentNodeId(choice.next)
   }
 
   const restartStory = () => {
     setCurrentNodeId(story.startNode)
-    setVisitedNodes([story.startNode])
+    setDecisions([])
+    setShowEnding(false)
   }
 
   if (!currentNode) {
@@ -38,6 +48,10 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
       </main>
     )
   }
+
+  const ending = showEnding ? pickEnding(story, decisions) : null
+  const points = score(decisions)
+  const bestScore = Math.max(...story.endings.map(e => e.minScore))
 
   return (
     <main className="reading-page">
@@ -52,81 +66,117 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
         </div>
 
         <div className="reading-progress">
-          <span>Ontdekte delen: {visitedNodes.length}</span>
+          <span>
+            Keuzes: {decisions.length} van {total}
+          </span>
           <div className="progress-track">
-            <div
-              className="progress-fill"
-              style={{
-                width: `${Math.min(visitedNodes.length * 20, 100)}%`,
-              }}
-            />
+            <div className="progress-fill" style={{ width: `${(decisions.length / total) * 100}%` }} />
           </div>
         </div>
       </header>
 
       <section className="reading-content">
-        <div className="chapter-label">
-          <span>HOOFDSTUK</span>
-          <span>{currentNode.chapter}</span>
-        </div>
-
-        <div className="story-panel">
-          <div className="story-illustration" aria-label="Verhaalillustratie">
-            {currentNode.image}
-          </div>
-
-          <div className="story-text">
-            <h1>{currentNode.title}</h1>
-            <p>{currentNode.text}</p>
-          </div>
-        </div>
-
-        {currentNode.question && (
-          <section className="comprehension-box">
-            <span className="question-label">🧠 DENK EVEN NA</span>
-            <h2>Begrijp je het verhaal?</h2>
-            <p>{currentNode.question}</p>
-          </section>
-        )}
-
-        {currentNode.choices && currentNode.choices.length > 0 && (
-          <section className="choices-section">
-            <h2>Wat doe jij?</h2>
-            <p>Kies hoe het verhaal verdergaat.</p>
-
-            <div className="choices-list">
-              {currentNode.choices.map((choice, index) => (
-                <button
-                  className="choice-button"
-                  key={`${currentNodeId}-${index}`}
-                  onClick={() => handleChoice(choice.next)}
-                >
-                  <span className="choice-number">{index + 1}</span>
-                  <span>{choice.text}</span>
-                  <span className="choice-arrow">→</span>
-                </button>
-              ))}
+        {ending ? (
+          <>
+            <div className="chapter-label">EINDE</div>
+            <div className="story-panel">
+              <div className="story-illustration" aria-hidden="true">
+                {ending.image}
+              </div>
+              <div className="story-text">
+                <h1>{ending.title}</h1>
+                <p>{ending.text}</p>
+              </div>
             </div>
-          </section>
-        )}
 
-        {currentNode.ending && (
-          <section className="ending-box">
-            <span className="ending-emoji">🎉</span>
-            <h2>Het verhaal is afgelopen!</h2>
+            <section className="ending-box">
+              <span className="ending-emoji">{points === total ? '🏆' : '🔎'}</span>
+              <h2>
+                {points === total
+                  ? `Je vond alle ${total} aanwijzingen!`
+                  : `Je vond ${points} van de ${total} aanwijzingen`}
+              </h2>
+              {ending.minScore < bestScore && (
+                <p>Er is nog een geheim einde. Lees het verhaal opnieuw en let goed op de aanwijzingen.</p>
+              )}
 
-            {currentNode.reflection && (
-              <p>{currentNode.reflection}</p>
+              <ol className="recap-list">
+                {decisions.map(decision => {
+                  const node = decisionNode(story, decision.nodeId)
+                  if (!node) return null
+                  return (
+                    <li key={decision.nodeId} className={decision.fitsText ? 'recap-good' : 'recap-miss'}>
+                      <span className="recap-icon" aria-hidden="true">
+                        {decision.fitsText ? '✅' : '🔎'}
+                      </span>
+                      <div>
+                        <strong>{node.question}</strong>
+                        <p>
+                          Jij koos: {node.choices[decision.choiceIndex].text}
+                          {decision.fitsText ? ' Goed gelezen!' : ''}
+                        </p>
+                        {!decision.fitsText && (
+                          <blockquote>
+                            <span>De aanwijzing stond in de tekst:</span> “{node.clue}”
+                          </blockquote>
+                        )}
+                        <span className="structure-tag">{structureNames[node.structure]}</span>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ol>
+
+              <button className="restart-button" onClick={restartStory}>
+                Lees opnieuw ↻
+              </button>
+              <button className="home-button" onClick={onBack}>
+                Kies een ander verhaal
+              </button>
+            </section>
+          </>
+        ) : (
+          <>
+            <div className="chapter-label">{currentNode.chapter.toUpperCase()}</div>
+
+            <div className="story-panel">
+              <div className="story-illustration" aria-hidden="true">
+                {currentNode.image}
+              </div>
+              <div className="story-text">
+                <h1>{currentNode.title}</h1>
+                <p>{currentNode.text}</p>
+              </div>
+            </div>
+
+            {currentNode.kind === 'decision' && (
+              <section className="choices-section">
+                <h2>{currentNode.question}</h2>
+                <p>Lees goed: in de tekst staat wat slim is.</p>
+                <div className="choices-list">
+                  {currentNode.choices.map((choice, index) => (
+                    <button className="choice-button" key={`${currentNodeId}-${index}`} onClick={() => choose(index)}>
+                      <span className="choice-number">{index + 1}</span>
+                      <span>{choice.text}</span>
+                      <span className="choice-arrow">→</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
             )}
 
-            <button className="restart-button" onClick={restartStory}>
-              Lees opnieuw ↻
-            </button>
+            {currentNode.kind === 'passage' && (
+              <button className="continue-button" onClick={() => setCurrentNodeId(currentNode.next)}>
+                Lees verder →
+              </button>
+            )}
 
-            <button className="home-button" onClick={onBack}>
-              Kies een ander verhaal
-            </button>
-          </section>
+            {currentNode.kind === 'finale' && (
+              <button className="continue-button" onClick={() => setShowEnding(true)}>
+                Hoe loopt het af? →
+              </button>
+            )}
+          </>
         )}
       </section>
     </main>

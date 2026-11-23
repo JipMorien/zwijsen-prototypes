@@ -431,6 +431,94 @@ button {
   color: #6873b5;
 }
 
+.continue-button {
+  display: block;
+  margin: 28px 0 0 auto;
+  padding: 14px 22px;
+  border: 0;
+  border-radius: 12px;
+  background: #6873b5;
+  color: white;
+  font-weight: 800;
+}
+
+.continue-button:hover,
+.restart-button:hover {
+  background: #5862a3;
+}
+
+.choice-button:focus-visible,
+.continue-button:focus-visible,
+.restart-button:focus-visible,
+.home-button:focus-visible,
+.back-button:focus-visible {
+  outline: 3px solid #8d9bd8;
+  outline-offset: 2px;
+}
+
+.ending-box h2 {
+  margin: 8px 0;
+  font-size: 22px;
+}
+
+.recap-list {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0 12px;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.recap-list li {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 14px;
+  background: white;
+}
+
+.recap-list li.recap-miss {
+  border: 2px solid #f0d9a8;
+}
+
+.recap-icon {
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.recap-list p {
+  margin: 4px 0;
+  color: #4e5a6e;
+}
+
+.recap-list blockquote {
+  margin: 8px 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fff6dc;
+  color: #26334a;
+  line-height: 1.5;
+}
+
+.recap-list blockquote span {
+  display: block;
+  color: #8a6d1f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.structure-tag {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #f0edff;
+  color: #6873b5;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 /* Mobile */
 @media (max-width: 650px) {
   .home-page {
