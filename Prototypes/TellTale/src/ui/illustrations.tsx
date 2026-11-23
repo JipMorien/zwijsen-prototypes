@@ -1,4 +1,5 @@
 import {
+  Activity,
   Apple,
   Bird,
   BrickWall,
@@ -8,6 +9,8 @@ import {
   Dog,
   Droplets,
   Flower2,
+  Footprints,
+  HeartHandshake,
   Gem,
   Hand,
   House,
@@ -16,6 +19,8 @@ import {
   MoonStar,
   Mountain,
   PawPrint,
+  Route,
+  Shirt,
   Sparkles,
   Sprout,
   Star,
@@ -51,6 +56,12 @@ const icons: Record<Illustration, LucideIcon> = {
   wish: Gem,
   home: House,
   night: MoonStar,
+  detour: Route,
+  torn: Shirt,
+  wetShoe: Footprints,
+  shaky: Activity,
+  tiredFox: Dog,
+  friend: HeartHandshake,
 }
 
 /** Small line drawings scattered over a cover, like the doodle pattern on Estafette books. */

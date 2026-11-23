@@ -1,6 +1,19 @@
-import { Check, ChevronRight, Lightbulb, Lock, RotateCcw, TrendingUp } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import {
+  Check,
+  ChevronRight,
+  Highlighter,
+  Lightbulb,
+  Lock,
+  Moon,
+  NotebookPen,
+  RotateCcw,
+  Sun,
+  Sunset,
+  TrendingUp,
+} from 'lucide-react'
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { loadProgress, recordRead, type StoryProgress } from '../engine/progress'
+import { activeTraces, clueMarked, duskLevel, splitSentences, timeOfDay, type Mark } from '../engine/reading'
 import {
   bestScore,
   collectFlags,
@@ -17,7 +30,7 @@ import {
   type Playthrough,
 } from '../engine/story'
 import type { Illustration, Story, TextStructure } from '../types/story'
-import { Scene } from '../ui/illustrations'
+import { IllustrationIcon, Scene } from '../ui/illustrations'
 
 type ReadingPageProps = {
   story: Story
@@ -31,13 +44,109 @@ const structureNames: Record<TextStructure, string> = {
   'probleem-oplossing': 'probleem en oplossing',
 }
 
-function Paragraphs({ text }: { text: string }) {
+type Marking = {
+  nodeId: string
+  marks: Mark[]
+  highlighter: boolean
+  onToggle: (text: string) => void
+}
+
+/** Story text. With marking, it is split into sentences the child can mark with the highlighter. */
+function Paragraphs({ text, marking }: { text: string; marking?: Marking }) {
   return (
-    <div className="story-text">
+    <div className={`story-text ${marking?.highlighter ? 'is-highlighting' : ''}`}>
       {text.split(/\n{2,}/).map((paragraph, index) => (
-        <p key={index}>{paragraph}</p>
+        <p key={index}>
+          {marking
+            ? splitSentences(paragraph).map((sentence, i) => <Sentence key={i} text={sentence} marking={marking} />)
+            : paragraph}
+        </p>
       ))}
     </div>
+  )
+}
+
+function Sentence({ text, marking }: { text: string; marking: Marking }) {
+  const marked = marking.marks.some(mark => mark.nodeId === marking.nodeId && mark.text === text)
+  const className = `sentence ${marked ? 'is-marked' : ''}`
+  if (!marking.highlighter) {
+    return (
+      <>
+        <span className={className}>{text}</span>{' '}
+      </>
+    )
+  }
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    marking.onToggle(text)
+  }
+  return (
+    <>
+      <span
+        className={className}
+        role="button"
+        tabIndex={0}
+        aria-pressed={marked}
+        onClick={() => marking.onToggle(text)}
+        onKeyDown={onKeyDown}
+      >
+        {text}
+      </span>{' '}
+    </>
+  )
+}
+
+/** The sentences the child marked so far, like a detective's notebook. */
+function Notebook({ marks }: { marks: Mark[] }) {
+  return (
+    <div className="notebook">
+      <h3>
+        <NotebookPen size={18} aria-hidden="true" />
+        Jouw speurdersboekje
+      </h3>
+      {marks.length === 0 ? (
+        <p className="notebook-empty">Nog leeg. Markeer een zin die belangrijk is, dan komt hij hier te staan.</p>
+      ) : (
+        <ul>
+          {marks.map(mark => (
+            <li key={`${mark.nodeId}-${mark.text}`}>
+              <span className="notebook-chapter">{mark.chapter}</span>
+              {mark.text.replace(/["“”]/g, '')}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+/** What the child carries along: the time of day and the traces earlier choices left behind. */
+function OnTheWay({ story, flags, dusk }: { story: Story; flags: Set<string>; dusk: number }) {
+  const traces = activeTraces(story, flags)
+  const SkyIcon = dusk < 0.55 ? Sun : dusk < 0.8 ? Sunset : Moon
+  return (
+    <section className="on-the-way" aria-label="Onderweg">
+      <h3>Onderweg</h3>
+      {story.dusk && (
+        <p className="sky-time">
+          <SkyIcon size={18} aria-hidden="true" />
+          {timeOfDay(dusk)}
+        </p>
+      )}
+      {traces.length === 0 ? (
+        <p className="trace-empty">Alles gaat nog goed.</p>
+      ) : (
+        <ul className="trace-list">
+          {traces.map(trace => (
+            <li key={trace.flag} className={`trace trace-${trace.tone}`}>
+              <IllustrationIcon name={trace.illustration} size={18} />
+              {trace.label}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   )
 }
 
@@ -54,10 +163,10 @@ function ChoiceDots({ made, total }: { made: number; total: number }) {
 
 function ChapterCard({ label, illustration, story }: { label: string; illustration: Illustration; story: Story }) {
   return (
-    <aside className="chapter-card">
+    <div className="chapter-card">
       <span className="chapter-name">{label}</span>
       <Scene name={illustration} color={story.color} size="small" />
-    </aside>
+    </div>
   )
 }
 
@@ -68,6 +177,8 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
   const [currentNodeId, setCurrentNodeId] = useState(story.startNode)
   const [visited, setVisited] = useState<string[]>([story.startNode])
   const [decisions, setDecisions] = useState<Decision[]>([])
+  const [marks, setMarks] = useState<Mark[]>([])
+  const [highlighter, setHighlighter] = useState(true)
   const [showEnding, setShowEnding] = useState(false)
   const [previousRead, setPreviousRead] = useState<StoryProgress | undefined>(() => loadProgress(story.id))
   const recorded = useRef(false)
@@ -80,6 +191,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
   const points = score(decisions)
   const ending = showEnding ? pickEnding(story, decisions) : null
   const hasSecret = ending ? ending.minScore === bestScore(story) : false
+  const dusk = story.dusk ? duskLevel(decisions, total) : 0
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -104,15 +216,29 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
     goTo(nextAfterChoice(story, currentNodeId, choiceIndex, playthrough))
   }
 
+  const toggleMark = (text: string) => {
+    if (!currentNode) return
+    const isThis = (mark: Mark) => mark.nodeId === currentNodeId && mark.text === text
+    setMarks(previous =>
+      previous.some(isThis)
+        ? previous.filter(mark => !isThis(mark))
+        : [...previous, { nodeId: currentNodeId, chapter: currentNode.chapter, text }],
+    )
+  }
+
   const restartStory = () => {
     setPreviousRead(loadProgress(story.id))
     setPlaythrough(createPlaythrough(story, Math.random, playthrough))
     setCurrentNodeId(story.startNode)
     setVisited([story.startNode])
     setDecisions([])
+    setMarks([])
     setShowEnding(false)
     recorded.current = false
   }
+
+  const pageClass = `reading-page ${story.dusk ? 'has-sky' : ''}`
+  const pageStyle = { '--dusk': dusk } as CSSProperties
 
   if (!currentNode) {
     return (
@@ -129,10 +255,17 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
 
   if (ending) {
     const gained = previousRead ? points - previousRead.lastScore : 0
+    const markedClues = decisions.filter(decision => {
+      const node = decisionNode(story, decision.nodeId)
+      return node ? clueMarked(node.variants[playthrough[decision.nodeId] ?? 0].clue, marks, decision.nodeId) : false
+    }).length
     return (
-      <main className="reading-page">
+      <main className={pageClass} style={pageStyle}>
         <div className="reading-layout">
-          <ChapterCard label="Einde" illustration={ending.illustration} story={story} />
+          <aside className="reading-side">
+            <ChapterCard label="Einde" illustration={ending.illustration} story={story} />
+            <OnTheWay story={story} flags={flags} dusk={dusk} />
+          </aside>
 
           <div className="reading-main">
             <article className="paper">
@@ -144,6 +277,14 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
               <div className="result-head">
                 <ChoiceDotsResult decisions={decisions} />
                 <h2>{points === total ? `Je vond alle ${total} aanwijzingen!` : `Je vond ${points} van de ${total} aanwijzingen`}</h2>
+                {marks.length > 0 && (
+                  <p className="marked-summary">
+                    <Highlighter size={18} aria-hidden="true" />
+                    {markedClues === 0
+                      ? 'Je hebt zinnen gemarkeerd, maar nog niet de aanwijzingen. Kijk hieronder waar ze stonden.'
+                      : `Je markeerde ${markedClues} van de ${total} aanwijzingen.`}
+                  </p>
+                )}
                 {previousRead && (
                   <p className={`compare ${gained > 0 ? 'is-up' : ''}`}>
                     {gained > 0 && <TrendingUp size={18} aria-hidden="true" />}
@@ -168,6 +309,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                   const node = decisionNode(story, decision.nodeId)
                   if (!node) return null
                   const variant = node.variants[playthrough[decision.nodeId] ?? 0]
+                  const marked = clueMarked(variant.clue, marks, decision.nodeId)
                   return (
                     <li key={decision.nodeId} className={decision.fitsText ? 'is-good' : 'is-miss'}>
                       <span className="recap-number">{decision.fitsText ? <Check size={16} strokeWidth={3} /> : index + 1}</span>
@@ -177,6 +319,14 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                           Jij koos: {node.choices[decision.choiceIndex].text}
                           {decision.fitsText && <span className="recap-good"> Goed gelezen!</span>}
                         </p>
+                        {marked && (
+                          <p className="recap-marked">
+                            <Highlighter size={16} aria-hidden="true" />
+                            {decision.fitsText
+                              ? 'Je had de aanwijzing gemarkeerd.'
+                              : 'Je had de aanwijzing wel gemarkeerd! Lees hem nog eens goed.'}
+                          </p>
+                        )}
                         {!decision.fitsText && (
                           <p className="recap-clue">
                             <span>Hier stond de aanwijzing:</span>
@@ -207,9 +357,20 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
   }
 
   return (
-    <main className="reading-page">
+    <main className={pageClass} style={pageStyle}>
       <div className="reading-layout">
-        <ChapterCard label={currentNode.chapter} illustration={currentNode.illustration} story={story} />
+        <aside className="reading-side">
+          <ChapterCard label={currentNode.chapter} illustration={currentNode.illustration} story={story} />
+          <button
+            className={`tool-button ${highlighter ? 'is-on' : ''}`}
+            aria-pressed={highlighter}
+            onClick={() => setHighlighter(on => !on)}
+          >
+            <Highlighter size={20} aria-hidden="true" />
+            Markeerstift
+          </button>
+          <OnTheWay story={story} flags={flags} dusk={dusk} />
+        </aside>
 
         <div className="reading-main">
           <article className="paper">
@@ -217,7 +378,16 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
               <h1>{render(currentNode.title)}</h1>
               <ChoiceDots made={decisions.length} total={total} />
             </div>
-            <Paragraphs text={render(currentNode.text)} />
+            {highlighter && currentNodeId === story.startNode && marks.length === 0 && (
+              <p className="highlight-hint">
+                <Highlighter size={18} aria-hidden="true" />
+                Tik op een zin om hem te markeren. Markeer wat belangrijk is!
+              </p>
+            )}
+            <Paragraphs
+              text={render(currentNode.text)}
+              marking={{ nodeId: currentNodeId, marks, highlighter, onToggle: toggleMark }}
+            />
 
             {currentNode.kind === 'decision' && (
               <section className="decision" aria-labelledby="decision-question">
@@ -226,6 +396,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                   <Lightbulb size={18} aria-hidden="true" />
                   Lees goed: in de tekst staat wat slim is.
                 </p>
+                <Notebook marks={marks} />
                 <ul className="choice-list">
                   {currentNode.choices.map((choice, index) => (
                     <li key={`${currentNodeId}-${index}`}>

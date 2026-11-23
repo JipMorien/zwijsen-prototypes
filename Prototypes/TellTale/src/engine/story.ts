@@ -150,6 +150,12 @@ export function validateStory(story: Story): string[] {
   const flagsSet = new Set(
     Object.values(story.nodes).flatMap(node => (node.kind === 'decision' ? [] : (node.sets ?? []))),
   )
+  for (const flag of flagsSet) {
+    if (!story.traces[flag]) problems.push(`vlag "${flag}" heeft geen spoor in traces`)
+  }
+  for (const flag of Object.keys(story.traces)) {
+    if (!flagsSet.has(flag)) problems.push(`spoor "${flag}" wordt nergens gezet`)
+  }
   for (const text of textsOf(story)) {
     for (const [, key] of text.matchAll(PLACEHOLDER)) {
       if (!(key in baseVars)) problems.push(`variabele {${key}} wordt gebruikt maar nergens gedefinieerd`)

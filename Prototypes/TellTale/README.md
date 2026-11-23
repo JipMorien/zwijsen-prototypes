@@ -10,6 +10,8 @@ Aan het einde ziet de leerling een terugblik: welke keuzes bij de tekst pasten, 
 Drie dingen zorgen dat opnieuw lezen ook echt lezen is:
 - **Varianten:** elke keuze heeft 2 of 3 versies van de aanwijzing. Bij elke leesbeurt kiest de app per keuze een andere versie dan de vorige keer, dus wie de antwoorden onthoudt, zit er de volgende keer naast.
 - **Sporen:** fouten komen later terug in het verhaal (een natte schoen, een gescheurde mouw, een moeie vos) en in het einde.
+- **Zichtbare sporen:** naast het verhaal staat een kaartje "Onderweg" met wat de leerling meedraagt: een natte schoen, een scheur in de mouw, of juist de vos als nieuwe vriend. De lucht achter het verhaal gaat van ochtend naar avond. Elke keuze kost wat tijd, en een keuze die niet bij de tekst past kost extra. Wie goed leest, is 's middags klaar; wie veel mist, komt in het donker thuis, net als in het einde.
+- **Markeerstift en speurdersboekje:** de leerling kan tijdens het lezen op een zin tikken om hem te markeren, net als de markeerstift in Estafette. Gemarkeerde zinnen staan bij elke keuze in het speurdersboekje. Het einde laat zien welke aanwijzingen gemarkeerd waren. "Je had de aanwijzing wel gemarkeerd!" helpt de leerling (en de leerkracht) te zien of het misging bij het vinden of bij het begrijpen van de aanwijzing.
 - **Voortgang:** de homepage toont per verhaal de beste score en of het geheime einde gevonden is. Het einde vergelijkt de score met de vorige keer. Dit wordt alleen in de browser bewaard.
 
 ## Starten
@@ -35,9 +37,11 @@ In alle teksten kun je twee soorten markeringen gebruiken:
 - `{plek}`: wordt vervangen door de waarde uit de gekozen variant.
 - `[[natteSchoen: Haar schoen soppt.]]`: wordt alleen getoond als die vlag eerder is gezet. Met `[[!natteSchoen: ...]]` juist alleen als hij níet is gezet.
 
+Elke vlag heeft een spoor nodig in `traces`, met een korte tekst, een plaatje en `tone: 'bad'` of `'good'`. Zo verschijnt hij op het kaartje "Onderweg". Zet `dusk: true` als tijd belangrijk is in het verhaal; dan wordt de lucht steeds donkerder.
+
 Let op: zet het antwoord nooit in de tekst van een keuze. "De stenen brug" is goed, "De stenen brug, die is stevig" verklapt het antwoord.
 
-Voeg het verhaal toe aan `src/prototype-data/stories.ts`. `npm test` controleert of het verhaal klopt: alle verwijzingen bestaan, elke aanwijzing staat letterlijk in de tekst van zijn variant, varianten gebruiken dezelfde woorden, elke gebruikte vlag en variabele bestaat, elke route eindigt, elke route heeft evenveel keuzes en elk einde is bereikbaar. Ook wordt elke combinatie van varianten gecontroleerd op achtergebleven markeringen.
+Voeg het verhaal toe aan `src/prototype-data/stories.ts`. `npm test` controleert of het verhaal klopt: alle verwijzingen bestaan, elke aanwijzing staat letterlijk in de tekst van zijn variant, varianten gebruiken dezelfde woorden, elke gebruikte vlag en variabele bestaat, elke vlag heeft een spoor, elke route eindigt, elke route heeft evenveel keuzes en elk einde is bereikbaar. Ook wordt elke combinatie van varianten gecontroleerd op achtergebleven markeringen.
 
 ## Bevindingen
 _Nog in te vullen na testen._

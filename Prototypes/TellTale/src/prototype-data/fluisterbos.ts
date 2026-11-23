@@ -19,6 +19,7 @@ export const fluisterbos: Story = {
   time: '10 minuten',
   available: true,
   startNode: 'start',
+  dusk: true,
 
   nodes: {
     // Hoofdstuk 1: oorzaak en gevolg
@@ -374,6 +375,7 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
       illustration: 'fox',
       text: `Het lukt! De vos springt overeind en zwaait met zijn staart. "Dank je wel!" roept hij blij. "Kom, ik weet waar je kat is."`,
       next: 'eik',
+      sets: ['vriend'],
     },
 
     // Hoofdstuk 5: oorzaak en gevolg
@@ -509,4 +511,13 @@ Het was een spannende dag. Toch denkt Mila dat het misschien sneller had gekund,
 Die avond in bed denkt Mila aan de uil en de vos. Hadden ze haar niet steeds aanwijzingen gegeven? Volgende keer gaat ze beter opletten.`,
     },
   ],
+
+  traces: {
+    vriend: { label: 'De vos is je vriend', illustration: 'friend', tone: 'good' },
+    omweg: { label: 'Moe van de omweg', illustration: 'detour', tone: 'bad' },
+    scheur: { label: 'Scheur in je mouw', illustration: 'torn', tone: 'bad' },
+    natteSchoen: { label: 'Natte schoen', illustration: 'wetShoe', tone: 'bad' },
+    brug: { label: 'Geschrokken op de brug', illustration: 'shaky', tone: 'bad' },
+    vos: { label: 'De vos is moe', illustration: 'tiredFox', tone: 'bad' },
+  },
 }

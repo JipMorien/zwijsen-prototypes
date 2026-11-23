@@ -283,8 +283,201 @@
 }
 
 /* Reading page */
+@property --dusk {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 .reading-page {
+  min-height: calc(100vh - 64px);
   padding: 32px 24px 64px;
+}
+
+/* The sky behind the story turns from morning to evening; missed clues cost time */
+.reading-page.has-sky {
+  background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--sky-day), var(--sky-night) calc(var(--dusk) * 100%)) 0%,
+      color-mix(in oklab, var(--sand), var(--sky-dusk) calc(var(--dusk) * 100%)) 75%
+    )
+    fixed;
+  transition: --dusk 1.5s ease;
+}
+
+.reading-side {
+  position: sticky;
+  top: 96px;
+  display: grid;
+  gap: 14px;
+}
+
+.tool-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  color: var(--ink-soft);
+  font-weight: 500;
+  transition: background-color 150ms;
+}
+
+.tool-button.is-on {
+  background: var(--marker);
+  color: var(--ink);
+}
+
+.on-the-way {
+  padding: 12px 14px 14px;
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  font-size: 14px;
+}
+
+.on-the-way h3 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-family: var(--font-hand);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.sky-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.trace-empty {
+  color: var(--muted);
+}
+
+.trace-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trace {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.3;
+  animation: trace-in 500ms ease;
+}
+
+.trace svg {
+  flex-shrink: 0;
+}
+
+.trace-bad {
+  color: var(--red);
+}
+
+.trace-good {
+  color: var(--green-dark);
+  font-weight: 500;
+}
+
+@keyframes trace-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* Highlighter: sentences can be tapped to mark them, like Estafette's highlighter tool */
+.sentence {
+  border-radius: 3px;
+  transition: background-color 150ms;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.is-highlighting .sentence {
+  cursor: pointer;
+}
+
+.is-highlighting .sentence:hover {
+  background: rgb(255 230 128 / 45%);
+}
+
+.sentence.is-marked,
+.is-highlighting .sentence.is-marked:hover {
+  background: linear-gradient(transparent 12%, var(--marker) 12%, var(--marker) 92%, transparent 92%);
+}
+
+.highlight-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 16px 48px 0;
+  padding: 8px 14px;
+  border-radius: var(--radius-small);
+  background: #fff6cc;
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+/* Notebook: lined paper with the marked sentences, in the handwritten font */
+.notebook {
+  margin-top: 18px;
+  padding: 12px 18px 14px;
+  border-left: 4px solid var(--red);
+  border-radius: 4px var(--radius-small) var(--radius-small) 4px;
+  background: repeating-linear-gradient(var(--paper), var(--paper) 29px, var(--blue-soft) 29px, var(--blue-soft) 30px);
+  box-shadow: var(--shadow);
+}
+
+.notebook h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.notebook ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notebook li,
+.notebook-empty {
+  font-family: var(--font-hand);
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.notebook-empty {
+  color: var(--muted);
+}
+
+.notebook-chapter {
+  display: block;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .reading-layout {
@@ -297,8 +490,6 @@
 
 /* The chapter card echoes Estafette's taped-on polaroids, with the handwritten label */
 .chapter-card {
-  position: sticky;
-  top: 96px;
   padding: 10px 10px 12px;
   border-radius: 6px;
   background: var(--paper);
@@ -474,6 +665,8 @@
 }
 
 .compare,
+.marked-summary,
+.recap-marked,
 .secret-hint {
   display: flex;
   align-items: center;
@@ -484,6 +677,22 @@
 .compare.is-up {
   color: var(--green-dark);
   font-weight: 500;
+}
+
+.marked-summary {
+  color: var(--ink);
+}
+
+.recap-marked {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.recap-marked svg {
+  flex-shrink: 0;
+  padding: 2px;
+  border-radius: 4px;
+  background: var(--marker);
 }
 
 .secret-hint {
@@ -589,8 +798,27 @@
     gap: 16px;
   }
 
-  .chapter-card {
+  .reading-side {
     position: static;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .tool-button {
+    padding: 0 14px;
+  }
+
+  .on-the-way {
+    flex-basis: 100%;
+  }
+
+  .highlight-hint {
+    margin: 12px 20px 0;
+  }
+
+  .chapter-card {
     display: flex;
     align-items: center;
     gap: 12px;

@@ -183,6 +183,7 @@ describe('validateStory', () => {
       { minScore: 0, title: '', illustration: 'forest', text: '' },
       { minScore: 1, title: '', illustration: 'forest', text: '' },
     ],
+    traces: { fout: { label: 'Fout', illustration: 'forest', tone: 'bad' } },
   })
   const decision = (story: Story) => {
     const node = story.nodes.a
@@ -221,5 +222,13 @@ describe('validateStory', () => {
     const problems = validateStory(story).join(' | ')
     expect(problems).toContain('keuze 1 kan fout zijn')
     expect(problems).toContain('onbekend deel "nergens"')
+  })
+
+  it('catches a flag without a trace and a trace that is never set', () => {
+    const story = tiny()
+    story.traces = { ander: { label: 'x', illustration: 'forest', tone: 'bad' } }
+    const problems = validateStory(story).join(' | ')
+    expect(problems).toContain('vlag "fout" heeft geen spoor')
+    expect(problems).toContain('spoor "ander" wordt nergens gezet')
   })
 })

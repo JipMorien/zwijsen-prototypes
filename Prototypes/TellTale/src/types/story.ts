@@ -51,6 +51,12 @@ export type Illustration =
   | 'wish'
   | 'home'
   | 'night'
+  | 'detour'
+  | 'torn'
+  | 'wetShoe'
+  | 'shaky'
+  | 'tiredFox'
+  | 'friend'
 
 /** Cover colours, taken from the Estafette palette. */
 export type StoryColor = 'red' | 'green' | 'blue' | 'purple'
@@ -98,6 +104,14 @@ export type StoryEnding = {
   text: string
 }
 
+/** How a flag shows up next to the story, so the child sees what a choice left behind. */
+export type Trace = {
+  label: string
+  illustration: Illustration
+  /** 'good' for something the child earned, 'bad' for something that went wrong. */
+  tone: 'good' | 'bad'
+}
+
 export type Story = {
   id: string
   title: string
@@ -112,4 +126,8 @@ export type Story = {
   startNode: string
   nodes: Record<string, StoryNode>
   endings: StoryEnding[]
+  /** Flags shown as traces on the 'Onderweg' card. Every flag the story sets needs one. */
+  traces: Record<string, Trace>
+  /** The sky slowly turns to evening as the day goes on, faster when clues are missed. */
+  dusk?: boolean
 }
