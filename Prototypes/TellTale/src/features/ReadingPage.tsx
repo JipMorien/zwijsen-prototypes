@@ -1,5 +1,4 @@
 import {
-  Check,
   ChevronRight,
   Droplet,
   Highlighter,
@@ -9,6 +8,7 @@ import {
   NotebookPen,
   RotateCcw,
   Sun,
+  Sparkles,
   Sunset,
   TrendingUp,
 } from 'lucide-react'
@@ -40,7 +40,7 @@ import {
   type Decision,
   type Playthrough,
 } from '../engine/story'
-import type { Illustration, Story, TextStructure } from '../types/story'
+import type { Illustration, Story } from '../types/story'
 import { IllustrationIcon, Scene } from '../ui/illustrations'
 
 type ReadingPageProps = {
@@ -48,12 +48,6 @@ type ReadingPageProps = {
   onBack: () => void
 }
 
-const structureNames: Record<TextStructure, string> = {
-  'oorzaak-gevolg': 'oorzaak en gevolg',
-  tijdvolgorde: 'volgorde',
-  vergelijken: 'vergelijken',
-  'probleem-oplossing': 'probleem en oplossing',
-}
 
 type Marking = {
   nodeId: string
@@ -295,28 +289,19 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
 
             <section className="paper result">
               <div className="result-head">
-                <ChoiceDotsResult decisions={decisions} />
-                <h2>{points === total ? `Je vond alle ${total} aanwijzingen!` : `Je vond ${points} van de ${total} aanwijzingen`}</h2>
-                {marks.length > 0 && (
-                  <p className="marked-summary">
-                    <Highlighter size={18} aria-hidden="true" />
-                    Je markeerde {accuracy.marked} {accuracy.marked === 1 ? 'zin' : 'zinnen'}.{' '}
-                    {accuracy.onClue === 0
-                      ? 'Daar zat nog geen aanwijzing bij. Kijk hieronder waar ze stonden.'
-                      : accuracy.onClue === accuracy.marked
-                        ? `${accuracy.marked === 1 ? 'Dat was een aanwijzing' : 'Dat waren allemaal aanwijzingen'}. Knap gekozen!`
-                        : `${accuracy.onClue} daarvan ${accuracy.onClue === 1 ? 'was een aanwijzing' : 'waren aanwijzingen'}.`}
+                <h2>Jouw tocht</h2>
+                {gained > 0 && (
+                  <p className="praise">
+                    <TrendingUp size={18} aria-hidden="true" />
+                    Je las nog beter dan vorige keer!
                   </p>
                 )}
-                {previousRead && (
-                  <p className={`compare ${gained > 0 ? 'is-up' : ''}`}>
-                    {gained > 0 && <TrendingUp size={18} aria-hidden="true" />}
-                    Vorige keer: {previousRead.lastScore} van {previousRead.total}.{' '}
-                    {gained > 0
-                      ? `${gained} ${gained === 1 ? 'aanwijzing' : 'aanwijzingen'} meer dan toen!`
-                      : gained === 0
-                        ? 'Net zo goed als vorige keer.'
-                        : 'Deze keer was lastiger.'}
+                {accuracy.onClue > 0 && (
+                  <p className="praise">
+                    <Highlighter size={18} aria-hidden="true" />
+                    {accuracy.onClue === accuracy.marked
+                      ? 'Knap gekozen met je markeerstift: je markeerde precies de belangrijke zinnen.'
+                      : 'Met je markeerstift vond je belangrijke zinnen.'}
                   </p>
                 )}
                 {!hasSecret && (
@@ -327,36 +312,37 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                 )}
               </div>
 
-              <ol className="recap">
-                {decisions.map((decision, index) => {
+              {/* The journey: what happened at every choice, told as part of the story, not as right or wrong */}
+              <ol className="journey">
+                {decisions.map(decision => {
                   const node = decisionNode(story, decision.nodeId)
                   if (!node) return null
                   const variant = node.variants[playthrough[decision.nodeId] ?? 0]
                   const marked = clueMarked(variant.clue, marks, decision.nodeId)
+                  const after = story.nodes[visited[visited.indexOf(decision.nodeId) + 1]]
                   return (
-                    <li key={decision.nodeId} className={decision.fitsText ? 'is-good' : 'is-miss'}>
-                      <span className="recap-number">{decision.fitsText ? <Check size={16} strokeWidth={3} /> : index + 1}</span>
+                    <li key={decision.nodeId} className={decision.fitsText ? 'is-good' : ''}>
+                      <span className="journey-stop" aria-hidden="true">
+                        {decision.fitsText ? <Sparkles size={14} /> : null}
+                      </span>
                       <div>
-                        <strong>{node.question}</strong>
-                        <p className="recap-choice">
-                          Jij koos: {node.choices[decision.choiceIndex].text}
-                          {decision.fitsText && <span className="recap-good"> Goed gelezen!</span>}
-                        </p>
-                        {marked && (
-                          <p className="recap-marked">
-                            <Highlighter size={16} aria-hidden="true" />
-                            {decision.fitsText
-                              ? 'Je had de aanwijzing gemarkeerd.'
-                              : 'Je had de aanwijzing wel gemarkeerd! Lees hem nog eens goed.'}
+                        <span className="journey-chapter">{node.chapter}</span>
+                        <strong>{after ? render(after.title) : node.title}</strong>
+                        <p className="journey-choice">Je koos: {node.choices[decision.choiceIndex].text.toLowerCase()}</p>
+                        {decision.fitsText && (
+                          <p className="journey-good">
+                            Goed gelezen!{marked && ' Je had de aanwijzing ook gemarkeerd.'}
                           </p>
                         )}
                         {!decision.fitsText && (
-                          <p className="recap-clue">
-                            <span>Hier stond de aanwijzing:</span>
-                            <mark>{variant.clue}</mark>
-                          </p>
+                          <details className="journey-peek">
+                            <summary>Wat stond er in de tekst?</summary>
+                            <p>
+                              <mark>{variant.clue}</mark>
+                            </p>
+                            {marked && <p className="journey-peek-note">Die zin had jij gemarkeerd. Lees hem nog eens rustig.</p>}
+                          </details>
                         )}
-                        <span className="tag">{structureNames[node.structure]}</span>
                       </div>
                     </li>
                   )
@@ -477,17 +463,5 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
   )
 }
 
-/** Result dots on the end screen: one per decision, filled when the choice fitted the text. */
-function ChoiceDotsResult({ decisions }: { decisions: Decision[] }) {
-  return (
-    <div className="result-dots" aria-hidden="true">
-      {decisions.map((decision, index) => (
-        <span key={index} className={decision.fitsText ? 'is-good' : ''}>
-          {decision.fitsText && <Check size={18} strokeWidth={3} />}
-        </span>
-      ))}
-    </div>
-  )
-}
 
 export default ReadingPage

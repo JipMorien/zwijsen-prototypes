@@ -662,28 +662,7 @@
   font-weight: 600;
 }
 
-.result-dots {
-  display: flex;
-  gap: 8px;
-}
-
-.result-dots span {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--sand-dark);
-  color: white;
-}
-
-.result-dots span.is-good {
-  background: var(--green);
-}
-
-.compare,
-.marked-summary,
-.recap-marked,
+.praise,
 .secret-hint {
   display: flex;
   align-items: center;
@@ -691,25 +670,9 @@
   color: var(--ink-soft);
 }
 
-.compare.is-up {
+.praise {
   color: var(--green-dark);
   font-weight: 500;
-}
-
-.marked-summary {
-  color: var(--ink);
-}
-
-.recap-marked {
-  margin-bottom: 8px;
-  font-size: 15px;
-}
-
-.recap-marked svg {
-  flex-shrink: 0;
-  padding: 2px;
-  border-radius: 4px;
-  background: var(--marker);
 }
 
 .secret-hint {
@@ -720,69 +683,102 @@
   font-size: 15px;
 }
 
-.recap {
+/* Journey: the choices as stops on a trail, told as story moments instead of right or wrong */
+.journey {
   display: grid;
-  gap: 0;
   margin: 20px 0 0;
-  padding: 0 32px 24px;
+  padding: 0 32px 28px;
   list-style: none;
 }
 
-.recap li {
+.journey li {
+  position: relative;
   display: flex;
   gap: 16px;
-  padding: 18px 0;
-  border-top: 1px solid var(--line);
+  padding-bottom: 22px;
 }
 
-.recap-number {
+/* The dotted trail between the stops */
+.journey li:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 26px;
+  bottom: 2px;
+  left: 12px;
+  border-left: 3px dotted var(--sand-dark);
+}
+
+.journey-stop {
   display: grid;
   flex-shrink: 0;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 27px;
+  height: 27px;
+  margin-top: 2px;
+  border: 3px solid var(--sand-dark);
   border-radius: 50%;
-  background: var(--sand);
-  color: var(--ink-soft);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.recap li.is-good .recap-number {
-  background: var(--green);
+  background: var(--paper);
   color: white;
 }
 
-.recap strong {
+.journey li.is-good .journey-stop {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.journey-chapter {
+  display: block;
+  color: var(--muted);
+  font-family: var(--font-hand);
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.journey strong {
+  font-size: 18px;
   font-weight: 600;
 }
 
-.recap-choice {
-  margin: 4px 0 8px;
+.journey-choice {
+  margin-top: 2px;
   color: var(--ink-soft);
 }
 
-.recap-good {
+.journey-good {
+  margin-top: 4px;
   color: var(--green-dark);
   font-weight: 500;
 }
 
-.recap-clue {
-  margin-bottom: 10px;
+.journey-peek {
+  margin-top: 8px;
+}
+
+.journey-peek summary {
+  width: fit-content;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.journey-peek p {
+  margin-top: 10px;
   line-height: 1.7;
 }
 
-.recap-clue span {
-  display: block;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-/* The clue looks highlighted with a marker, like Estafette's highlighter tools */
-.recap-clue mark {
+.journey-peek mark {
   padding: 0 2px;
   background: linear-gradient(transparent 45%, var(--marker) 45%);
   color: var(--ink);
+}
+
+.journey-peek-note {
+  color: var(--ink-soft);
+  font-size: 15px;
 }
 
 /* Small screens */
@@ -879,7 +875,7 @@
     font-size: 17px;
   }
 
-  .recap {
+  .journey {
     padding: 0 20px 20px;
   }
 

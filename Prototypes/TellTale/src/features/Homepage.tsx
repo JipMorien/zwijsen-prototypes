@@ -1,4 +1,4 @@
-import { ChevronRight, Clock, Gem, Lock, Search } from 'lucide-react'
+import { ChevronRight, Clock, Gem, Lock, BookOpen } from 'lucide-react'
 import { loadAllProgress } from '../engine/progress'
 import type { Story } from '../types/story'
 import { Scene } from '../ui/illustrations'
@@ -38,8 +38,8 @@ function HomePage({ stories, onSelectStory }: HomePageProps) {
                 {result && (
                   <ul className="book-progress" aria-label="Jouw voortgang">
                     <li>
-                      <Search size={16} aria-hidden="true" />
-                      Beste: {result.bestScore} van {result.total} aanwijzingen
+                      <BookOpen size={16} aria-hidden="true" />
+                      {result.timesRead === 1 ? '1 keer gelezen' : `${result.timesRead} keer gelezen`}
                     </li>
                     <li className={result.secretEndingFound ? 'is-found' : ''}>
                       {result.secretEndingFound ? <Gem size={16} aria-hidden="true" /> : <Lock size={16} aria-hidden="true" />}
