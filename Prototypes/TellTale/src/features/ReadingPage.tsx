@@ -1,5 +1,20 @@
-import { useEffect, useState } from 'react'
-import { decisionCount, decisionNode, pickEnding, score, type Decision } from '../engine/story'
+import { useEffect, useRef, useState } from 'react'
+import { loadProgress, recordRead, type StoryProgress } from '../engine/progress'
+import {
+  bestScore,
+  collectFlags,
+  createPlaythrough,
+  decisionCount,
+  decisionNode,
+  fittingChoice,
+  nextAfterChoice,
+  pickEnding,
+  renderText,
+  score,
+  storyVars,
+  type Decision,
+  type Playthrough,
+} from '../engine/story'
 import type { Story, TextStructure } from '../types/story'
 
 type ReadingPageProps = {
@@ -15,29 +30,60 @@ const structureNames: Record<TextStructure, string> = {
 }
 
 function ReadingPage({ story, onBack }: ReadingPageProps) {
+  const [playthrough, setPlaythrough] = useState<Playthrough>(() =>
+    createPlaythrough(story, Math.random, loadProgress(story.id)?.lastVariants),
+  )
   const [currentNodeId, setCurrentNodeId] = useState(story.startNode)
+  const [visited, setVisited] = useState<string[]>([story.startNode])
   const [decisions, setDecisions] = useState<Decision[]>([])
   const [showEnding, setShowEnding] = useState(false)
+  const [previousRead, setPreviousRead] = useState<StoryProgress | undefined>(() => loadProgress(story.id))
+  const recorded = useRef(false)
 
   const currentNode = story.nodes[currentNodeId]
   const total = decisionCount(story)
+  const vars = storyVars(story, playthrough)
+  const flags = collectFlags(story, visited)
+  const render = (text: string) => renderText(text, vars, flags)
+  const points = score(decisions)
+  const ending = showEnding ? pickEnding(story, decisions) : null
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [currentNodeId, showEnding])
 
+  useEffect(() => {
+    if (!ending || recorded.current) return
+    recorded.current = true
+    recordRead(story.id, {
+      score: points,
+      total,
+      secretEnding: ending.minScore === bestScore(story),
+      variants: playthrough,
+    })
+  }, [ending, points, total, story, playthrough])
+
+  const goTo = (nodeId: string | undefined) => {
+    if (!nodeId || !story.nodes[nodeId]) return
+    setCurrentNodeId(nodeId)
+    setVisited(previous => [...previous, nodeId])
+  }
+
   const choose = (choiceIndex: number) => {
     if (currentNode?.kind !== 'decision') return
-    const choice = currentNode.choices[choiceIndex]
-    if (!story.nodes[choice.next]) return
-    setDecisions(previous => [...previous, { nodeId: currentNodeId, choiceIndex, fitsText: choice.fitsText }])
-    setCurrentNodeId(choice.next)
+    const fitsText = choiceIndex === fittingChoice(story, currentNodeId, playthrough)
+    setDecisions(previous => [...previous, { nodeId: currentNodeId, choiceIndex, fitsText }])
+    goTo(nextAfterChoice(story, currentNodeId, choiceIndex, playthrough))
   }
 
   const restartStory = () => {
+    setPreviousRead(loadProgress(story.id))
+    setPlaythrough(createPlaythrough(story, Math.random, playthrough))
     setCurrentNodeId(story.startNode)
+    setVisited([story.startNode])
     setDecisions([])
     setShowEnding(false)
+    recorded.current = false
   }
 
   if (!currentNode) {
@@ -48,10 +94,6 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
       </main>
     )
   }
-
-  const ending = showEnding ? pickEnding(story, decisions) : null
-  const points = score(decisions)
-  const bestScore = Math.max(...story.endings.map(e => e.minScore))
 
   return (
     <main className="reading-page">
@@ -85,25 +127,37 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
               </div>
               <div className="story-text">
                 <h1>{ending.title}</h1>
-                <p>{ending.text}</p>
+                <p>{render(ending.text)}</p>
               </div>
             </div>
 
             <section className="ending-box">
               <span className="ending-emoji">{points === total ? '🏆' : '🔎'}</span>
-              <h2>
-                {points === total
-                  ? `Je vond alle ${total} aanwijzingen!`
-                  : `Je vond ${points} van de ${total} aanwijzingen`}
-              </h2>
-              {ending.minScore < bestScore && (
-                <p>Er is nog een geheim einde. Lees het verhaal opnieuw en let goed op de aanwijzingen.</p>
+              <h2>{points === total ? `Je vond alle ${total} aanwijzingen!` : `Je vond ${points} van de ${total} aanwijzingen`}</h2>
+
+              {previousRead && (
+                <p className="compare-line">
+                  Vorige keer: {previousRead.lastScore} van {previousRead.total}.{' '}
+                  {points > previousRead.lastScore
+                    ? `Je bent ${points - previousRead.lastScore} ${points - previousRead.lastScore === 1 ? 'aanwijzing' : 'aanwijzingen'} vooruitgegaan! 📈`
+                    : points === previousRead.lastScore
+                      ? 'Net zo goed als vorige keer.'
+                      : 'Deze keer was lastiger.'}
+                </p>
+              )}
+
+              {ending.minScore < bestScore(story) && (
+                <p>
+                  Er is nog een geheim einde. Lees het verhaal opnieuw: de aanwijzingen zijn dan anders, dus lees
+                  goed!
+                </p>
               )}
 
               <ol className="recap-list">
                 {decisions.map(decision => {
                   const node = decisionNode(story, decision.nodeId)
                   if (!node) return null
+                  const variant = node.variants[playthrough[decision.nodeId] ?? 0]
                   return (
                     <li key={decision.nodeId} className={decision.fitsText ? 'recap-good' : 'recap-miss'}>
                       <span className="recap-icon" aria-hidden="true">
@@ -117,7 +171,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                         </p>
                         {!decision.fitsText && (
                           <blockquote>
-                            <span>De aanwijzing stond in de tekst:</span> “{node.clue}”
+                            <span>De aanwijzing stond in de tekst:</span> “{variant.clue}”
                           </blockquote>
                         )}
                         <span className="structure-tag">{structureNames[node.structure]}</span>
@@ -144,8 +198,8 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                 {currentNode.image}
               </div>
               <div className="story-text">
-                <h1>{currentNode.title}</h1>
-                <p>{currentNode.text}</p>
+                <h1>{render(currentNode.title)}</h1>
+                <p>{render(currentNode.text)}</p>
               </div>
             </div>
 
@@ -166,7 +220,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
             )}
 
             {currentNode.kind === 'passage' && (
-              <button className="continue-button" onClick={() => setCurrentNodeId(currentNode.next)}>
+              <button className="continue-button" onClick={() => goTo(currentNode.next)}>
                 Lees verder →
               </button>
             )}

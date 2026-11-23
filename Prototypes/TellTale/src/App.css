@@ -519,6 +519,32 @@ button {
   font-weight: 800;
 }
 
+.story-progress {
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f7f5ff;
+  color: #4e5a6e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.secret-found {
+  color: #8a6d1f;
+}
+
+.secret-locked {
+  color: #778094;
+}
+
+.compare-line {
+  margin-top: 4px;
+  color: #4e5a6e;
+  font-weight: 700;
+}
+
 /* Mobile */
 @media (max-width: 650px) {
   .home-page {

@@ -1,3 +1,4 @@
+import { loadAllProgress } from '../engine/progress'
 import type { Story } from '../types/story'
 
 type HomePageProps = {
@@ -6,6 +7,8 @@ type HomePageProps = {
 }
 
 function HomePage({ stories, onSelectStory }: HomePageProps) {
+  const progress = loadAllProgress()
+
   return (
     <main className="home-page">
       <header className="hero">
@@ -37,7 +40,8 @@ function HomePage({ stories, onSelectStory }: HomePageProps) {
             <p>Elk verhaal heeft verschillende keuzes en verrassende eindes.</p>
           </div>
           <span className="story-count">
-            {stories.filter(story => story.available).length} verhalen
+            {stories.filter(story => story.available).length}{' '}
+            {stories.filter(story => story.available).length === 1 ? 'verhaal' : 'verhalen'}
           </span>
         </div>
 
@@ -55,6 +59,17 @@ function HomePage({ stories, onSelectStory }: HomePageProps) {
               <div className="story-card-content">
                 <h3>{story.title}</h3>
                 <p>{story.description}</p>
+
+                {progress[story.id] && (
+                  <div className="story-progress">
+                    <span>
+                      🔎 Beste: {progress[story.id].bestScore} van {progress[story.id].total} aanwijzingen
+                    </span>
+                    <span className={progress[story.id].secretEndingFound ? 'secret-found' : 'secret-locked'}>
+                      {progress[story.id].secretEndingFound ? '✨ Geheim einde gevonden' : '🔒 Geheim einde nog niet gevonden'}
+                    </span>
+                  </div>
+                )}
 
                 <div className="story-card-footer">
                   <span>⏱ {story.time}</span>
