@@ -1,4 +1,5 @@
 import {
+  BookOpen,
   ChevronRight,
   Droplet,
   Highlighter,
@@ -11,6 +12,7 @@ import {
   Sparkles,
   Sunset,
   TrendingUp,
+  X,
 } from 'lucide-react'
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { loadProgress, recordRead, type StoryProgress } from '../engine/progress'
@@ -40,14 +42,15 @@ import {
   type Decision,
   type Playthrough,
 } from '../engine/story'
-import type { Illustration, Story } from '../types/story'
+import { splitWords } from '../engine/puzzle'
+import type { Illustration, Story, WordHelp } from '../types/story'
 import { IllustrationIcon, Scene } from '../ui/illustrations'
+import PuzzleView from './PuzzleView'
 
 type ReadingPageProps = {
   story: Story
   onBack: () => void
 }
-
 
 type Marking = {
   nodeId: string
@@ -56,28 +59,100 @@ type Marking = {
   onToggle: (text: string) => void
 }
 
-/** Story text. With marking, it is split into sentences the child can mark with the highlighter. */
-function Paragraphs({ text, marking }: { text: string; marking?: Marking }) {
+type WordHelpProps = {
+  words: WordHelp[]
+  open: OpenWord | null
+  onOpen: (word: OpenWord | null) => void
+}
+
+/** The difficult word the child tapped, and in which paragraph, so the explanation shows there. */
+type OpenWord = { help: WordHelp; text: string; paragraph: number }
+
+/**
+ * Story text. With marking, it is split into sentences the child can mark with the highlighter,
+ * and difficult words get a dotted line and can be tapped for an explanation.
+ */
+function Paragraphs({ text, marking, wordHelp }: { text: string; marking?: Marking; wordHelp?: WordHelpProps }) {
   return (
     <div className={`story-text ${marking?.highlighter ? 'is-highlighting' : ''}`}>
       {text.split(/\n{2,}/).map((paragraph, index) => (
-        <p key={index}>
-          {marking
-            ? splitSentences(paragraph).map((sentence, i) => <Sentence key={i} text={sentence} marking={marking} />)
-            : paragraph}
-        </p>
+        <div key={index} className="paragraph">
+          <p>
+            {marking
+              ? splitSentences(paragraph).map((sentence, i) => (
+                  <Sentence key={i} text={sentence} marking={marking} wordHelp={wordHelp} paragraph={index} />
+                ))
+              : paragraph}
+          </p>
+          {wordHelp?.open?.paragraph === index && <WordCard word={wordHelp.open} onClose={() => wordHelp.onOpen(null)} />}
+        </div>
       ))}
     </div>
   )
 }
 
-function Sentence({ text, marking }: { text: string; marking: Marking }) {
+function WordCard({ word, onClose }: { word: OpenWord; onClose: () => void }) {
+  return (
+    <div className="word-card" role="status">
+      <BookOpen size={20} aria-hidden="true" />
+      <p>
+        <strong>{word.text}</strong>
+        {word.help.meaning}
+      </p>
+      <button type="button" className="word-card-close" onClick={onClose} aria-label="Uitleg sluiten">
+        <X size={18} />
+      </button>
+    </div>
+  )
+}
+
+/** A sentence with its difficult words as small buttons. */
+function SentenceText({ text, wordHelp, paragraph }: { text: string; wordHelp?: WordHelpProps; paragraph: number }) {
+  if (!wordHelp) return <>{text}</>
+  return (
+    <>
+      {splitWords(text, wordHelp.words).map((piece, index) =>
+        piece.word ? (
+          <button
+            type="button"
+            key={index}
+            className={`word ${wordHelp.open?.text === piece.text ? 'is-open' : ''}`}
+            aria-expanded={wordHelp.open?.text === piece.text}
+            onClick={event => {
+              event.stopPropagation()
+              const isOpen = wordHelp.open?.text === piece.text && wordHelp.open.paragraph === paragraph
+              wordHelp.onOpen(isOpen ? null : { help: piece.word!, text: piece.text, paragraph })
+            }}
+            onKeyDown={event => event.stopPropagation()}
+          >
+            {piece.text}
+          </button>
+        ) : (
+          <span key={index}>{piece.text}</span>
+        ),
+      )}
+    </>
+  )
+}
+
+function Sentence({
+  text,
+  marking,
+  wordHelp,
+  paragraph,
+}: {
+  text: string
+  marking: Marking
+  wordHelp?: WordHelpProps
+  paragraph: number
+}) {
   const marked = marking.marks.some(mark => mark.nodeId === marking.nodeId && mark.text === text)
   const className = `sentence ${marked ? 'is-marked' : ''}`
+  const content = <SentenceText text={text} wordHelp={wordHelp} paragraph={paragraph} />
   if (!marking.highlighter) {
     return (
       <>
-        <span className={className}>{text}</span>{' '}
+        <span className={className}>{content}</span>{' '}
       </>
     )
   }
@@ -96,7 +171,7 @@ function Sentence({ text, marking }: { text: string; marking: Marking }) {
         onClick={() => marking.onToggle(text)}
         onKeyDown={onKeyDown}
       >
-        {text}
+        {content}
       </span>{' '}
     </>
   )
@@ -186,6 +261,8 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
   const [highlighter, setHighlighter] = useState(true)
   /** Set when the child tries to mark a sentence without ink left. */
   const [inkOut, setInkOut] = useState(false)
+  const [openWord, setOpenWord] = useState<OpenWord | null>(null)
+  const [puzzleSolved, setPuzzleSolved] = useState(false)
   const [showEnding, setShowEnding] = useState(false)
   /** At a decision, the question only appears after reading, and then the text is gone. */
   const [questionOpen, setQuestionOpen] = useState(false)
@@ -218,6 +295,8 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
     setVisited(previous => [...previous, nodeId])
     setQuestionOpen(false)
     setInkOut(false)
+    setOpenWord(null)
+    setPuzzleSolved(false)
   }
 
   const choose = (choiceIndex: number) => {
@@ -250,6 +329,8 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
     setShowEnding(false)
     setQuestionOpen(false)
     setInkOut(false)
+    setOpenWord(null)
+    setPuzzleSolved(false)
     recorded.current = false
   }
 
@@ -319,6 +400,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                   if (!node) return null
                   const variant = node.variants[playthrough[decision.nodeId] ?? 0]
                   const marked = clueMarked(variant.clue, marks, decision.nodeId)
+                  // The title of what happened next; if the story went straight on, the chapter's own title
                   const after = story.nodes[visited[visited.indexOf(decision.nodeId) + 1]]
                   return (
                     <li key={decision.nodeId} className={decision.fitsText ? 'is-good' : ''}>
@@ -327,7 +409,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                       </span>
                       <div>
                         <span className="journey-chapter">{node.chapter}</span>
-                        <strong>{after ? render(after.title) : node.title}</strong>
+                        <strong>{render(after && (after.kind === 'passage' || after.kind === 'finale') ? after.title : node.title)}</strong>
                         <p className="journey-choice">Je koos: {node.choices[decision.choiceIndex].text.toLowerCase()}</p>
                         {decision.fitsText && (
                           <p className="journey-good">
@@ -399,7 +481,8 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                   <p className="highlight-hint">
                     <Highlighter size={18} aria-hidden="true" />
                     Let op: als je klaar bent met lezen, verdwijnt de tekst. Je markeerstift heeft {INK_PER_PAGE} strepen
-                    per bladzijde. Tik op de zinnen die het belangrijkst zijn, dan bewaar je ze in je speurdersboekje.
+                    per bladzijde. Tik op de zinnen die het belangrijkst zijn, dan bewaar je ze in je speurdersboekje. Ken je
+                    een woord met een stippellijn niet? Tik erop voor uitleg.
                   </p>
                 )}
                 {inkOut && (
@@ -411,6 +494,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                 <Paragraphs
                   text={render(currentNode.text)}
                   marking={{ nodeId: currentNodeId, marks, highlighter, onToggle: toggleMark }}
+                  wordHelp={{ words: story.words, open: openWord, onOpen: setOpenWord }}
                 />
               </>
             )}
@@ -445,13 +529,22 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
               </section>
             )}
 
-            {currentNode.kind !== 'decision' && (
+            {currentNode.kind === 'puzzle' && (
+              <PuzzleView
+                key={currentNodeId}
+                puzzle={currentNode.puzzle}
+                render={render}
+                onSolved={() => setPuzzleSolved(true)}
+              />
+            )}
+
+            {(currentNode.kind === 'passage' || currentNode.kind === 'finale' || (currentNode.kind === 'puzzle' && puzzleSolved)) && (
               <div className="paper-footer">
                 <button
                   className="button-primary"
-                  onClick={() => (currentNode.kind === 'passage' ? goTo(currentNode.next) : setShowEnding(true))}
+                  onClick={() => (currentNode.kind === 'finale' ? setShowEnding(true) : goTo(currentNode.next))}
                 >
-                  {currentNode.kind === 'passage' ? 'Lees verder' : 'Hoe loopt het af?'}
+                  {currentNode.kind === 'finale' ? 'Hoe loopt het af?' : 'Lees verder'}
                   <ChevronRight size={20} aria-hidden="true" />
                 </button>
               </div>

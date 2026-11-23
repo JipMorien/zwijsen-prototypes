@@ -32,37 +32,39 @@ export const fluisterbos: Story = {
 
 Mama zei vanochtend nog: "{moeder}"
 
-Bij de ingang van het bos staat een oud bordje met drie pijlen. Eén pijl wijst naar de beek, één naar de oude molen en één naar de heuvel met bloemen.`,
+Bij de ingang van het bos staat een oud bordje met drie pijlen. Eén pijl wijst naar de beek, waar kleine visjes zwemmen. Eén pijl wijst naar de oude molen, vol zakken meel en muizen. En één pijl wijst naar de bloemenheuvel, waar geen bomen staan en de zon de hele dag schijnt.`,
       question: 'Welke kant gaat Mila op?',
+      // Scan-proof: mama names all three things and says "niet" to two of them. Only by combining
+      // what mama says with what the bordje says does the child know where Pluis is.
       choices: [
-        { text: 'Naar de oude molen', miss: 'molenMis' },
-        { text: 'Naar de beek', miss: 'beekMis' },
-        { text: 'Naar de bloemenheuvel', miss: 'heuvelMis' },
+        { text: 'Naar de oude molen', keyword: 'molen', miss: 'molenMis' },
+        { text: 'Naar de beek', keyword: 'beek', miss: 'beekMis' },
+        { text: 'Naar de bloemenheuvel', keyword: 'bloemenheuvel', miss: 'heuvelMis' },
       ],
       variants: [
         {
           fits: 1,
-          clue: 'Pluis is dol op vis. Misschien is hij naar de beek gelopen, want daar zwemmen kleine visjes.',
+          clue: 'Maar vis, daar is hij dol op.',
           vars: {
-            moeder: 'Pluis is dol op vis. Misschien is hij naar de beek gelopen, want daar zwemmen kleine visjes.',
+            moeder: 'Pluis jaagt nooit op muizen en hij houdt niet van de hete zon. Maar vis, daar is hij dol op.',
             plek: 'de beek',
             reden: 'Pluis is dol op vis',
           },
         },
         {
           fits: 0,
-          clue: 'Pluis jaagt graag op muizen. In de oude molen wonen heel veel muizen, dus misschien is hij daarheen gegaan.',
+          clue: 'Maar muizen vangen, dat vindt hij het allerleukst.',
           vars: {
-            moeder: 'Pluis jaagt graag op muizen. In de oude molen wonen heel veel muizen, dus misschien is hij daarheen gegaan.',
+            moeder: 'Pluis houdt niet van water en hij ligt liever in de schaduw dan in de zon. Maar muizen vangen, dat vindt hij het allerleukst.',
             plek: 'de oude molen',
-            reden: 'Pluis jaagt graag op muizen',
+            reden: 'Pluis vangt het liefst muizen',
           },
         },
         {
           fits: 2,
-          clue: 'Pluis ligt het liefst in de zon. Op de bloemenheuvel staan geen bomen, dus daar schijnt de zon de hele dag.',
+          clue: 'Hij ligt het allerliefst ergens lekker in de zon.',
           vars: {
-            moeder: 'Pluis ligt het liefst in de zon. Op de bloemenheuvel staan geen bomen, dus daar schijnt de zon de hele dag.',
+            moeder: 'Pluis houdt niet van water en muizen laat hij altijd met rust. Hij ligt het allerliefst ergens lekker in de zon.',
             plek: 'de bloemenheuvel',
             reden: 'Pluis ligt het liefst in de zon',
           },
@@ -123,7 +125,27 @@ Wat zei mama ook alweer? {reden}! Mila loopt de heuvel af, op weg naar {plek}.`,
 
 [[omweg: Mila is wel al een beetje moe van de omweg die ze heeft gemaakt.]]
 
-Naast het plukje haar lopen kleine pootafdrukken het bos in. Mila volgt ze, dieper en dieper het Fluisterbos in.`,
+Het gras is op één plek helemaal platgedrukt. Ernaast staat een bakje water van een boer, maar het is leeg. En naast het plukje haar lopen kleine pootafdrukken het bos in.`,
+      next: 'speuren',
+    },
+
+    // Puzzel: oorzaak en gevolg. Wat betekent wat Mila ziet?
+    speuren: {
+      kind: 'puzzle',
+      chapter: 'Hoofdstuk 1',
+      title: 'Mila speurt',
+      illustration: 'tracks',
+      text: `Mila gaat op haar hurken zitten en kijkt goed. Een echte speurder vraagt zich bij alles af: waardoor komt dat?`,
+      puzzle: {
+        type: 'match',
+        prompt: 'Wat betekent wat Mila ziet? Kies bij elk spoor wat erbij past.',
+        pairs: [
+          { left: 'Een plukje wit kattenhaar', right: 'Pluis is hier geweest.' },
+          { left: 'Platgedrukt gras', right: 'Pluis heeft hier liggen slapen.' },
+          { left: 'Een leeg bakje water', right: 'Pluis had dorst en heeft gedronken.' },
+          { left: 'Pootafdrukken het bos in', right: 'Pluis is verder het bos in gelopen.' },
+        ],
+      },
       next: 'uil',
     },
 
@@ -137,38 +159,40 @@ Naast het plukje haar lopen kleine pootafdrukken het bos in. Mila volgt ze, diep
 
 "{route}"
 
-Mila bedankt de uil en loopt het pad af. Na een tijdje ziet ze een grote boom met een gat in de stam. De holle boom! Hier splitst het pad zich in drieën.`,
+Mila bedankt de uil en loopt het pad af. Bij de grote steen en bij het beekje doet ze precies wat de uil zei. Dan staat ze voor een grote boom met een gat in de stam. De holle boom! Hier kan ze naar links, naar rechts of rechtdoor.`,
       question: 'Welke kant gaat Mila op?',
+      // Scan-proof: the uil names all three directions, one per place on the route. Only by keeping
+      // the order straight does the child know which direction belongs to the holle boom.
       choices: [
-        { text: 'Linksaf', miss: 'linksMis' },
-        { text: 'Rechtsaf', miss: 'rechtsMis' },
-        { text: 'Rechtdoor', miss: 'rechtdoorMis' },
+        { text: 'Linksaf', keyword: 'links', miss: 'linksMis' },
+        { text: 'Rechtsaf', keyword: 'rechts', miss: 'rechtsMis' },
+        { text: 'Rechtdoor', keyword: 'rechtdoor', miss: 'rechtdoorMis' },
       ],
       variants: [
         {
           fits: 0,
-          clue: 'Sla bij de holle boom linksaf, langs de varens.',
+          clue: 'Als laatste kom je bij een boom met een groot gat in de stam. Daar ga je linksaf, langs de varens.',
           vars: {
             route:
-              'Loop eerst over het pad tot aan de grote holle boom. Ga daar niet rechtdoor, want daar begint het moeras. Sla bij de holle boom linksaf, langs de varens.',
+              'Eerst ga je bij de grote steen rechtsaf. Daarna loop je bij het beekje gewoon rechtdoor. Als laatste kom je bij een boom met een groot gat in de stam. Daar ga je linksaf, langs de varens.',
             richting: 'linksaf',
           },
         },
         {
           fits: 1,
-          clue: 'Sla bij de holle boom rechtsaf, het smalle pad op.',
+          clue: 'Als laatste kom je bij een boom met een groot gat in de stam. Daar ga je rechtsaf, het smalle pad op.',
           vars: {
             route:
-              'Loop eerst over het pad tot aan de grote holle boom. Ga daar niet rechtdoor, want daar begint het moeras. Sla bij de holle boom rechtsaf, het smalle pad op.',
+              'Eerst ga je bij de grote steen linksaf. Daarna loop je bij het beekje gewoon rechtdoor. Als laatste kom je bij een boom met een groot gat in de stam. Daar ga je rechtsaf, het smalle pad op.',
             richting: 'rechtsaf',
           },
         },
         {
           fits: 2,
-          clue: 'Ga bij de holle boom gewoon rechtdoor, over de stapstenen.',
+          clue: 'Als laatste kom je bij een boom met een groot gat in de stam. Daar loop je rechtdoor, over de stapstenen.',
           vars: {
             route:
-              'Loop eerst over het pad tot aan de grote holle boom. De paden naar links en naar rechts lopen allebei dood. Ga bij de holle boom gewoon rechtdoor, over de stapstenen.',
+              'Eerst ga je bij de grote steen linksaf. Daarna ga je bij het beekje rechtsaf. Als laatste kom je bij een boom met een groot gat in de stam. Daar loop je rechtdoor, over de stapstenen.',
             richting: 'rechtdoor',
           },
         },
@@ -208,7 +232,7 @@ Wat had de uil gezegd? Bij de holle boom moest ze {richting}! Mila klimt terug e
       illustration: 'swamp',
       text: `Mila loopt rechtdoor. De grond wordt steeds zachter. Plotseling zakt haar voet weg in de modder. Bah! Haar schoen is helemaal nat en vies. Een kikker kijkt haar verbaasd aan.
 
-Nu weet Mila het weer: hier begint het moeras. Bij de holle boom moest ze {richting}! Met een soppende schoen loopt ze terug.`,
+Dit is het moeras! Wat had de uil gezegd? Bij de holle boom moest ze {richting}. Met een soppende schoen loopt ze terug.`,
       next: 'bruggen',
       sets: ['natteSchoen'],
     },
@@ -228,8 +252,8 @@ Er zijn twee bruggen. {bruggen}
 Mila wil zo snel mogelijk naar Pluis. Maar ze wil ook veilig aan de overkant komen.`,
       question: 'Over welke brug gaat Mila?',
       choices: [
-        { text: 'De houten brug', miss: 'houtenMis' },
-        { text: 'De stenen brug', miss: 'stenenMis' },
+        { text: 'De houten brug', keyword: 'houten', miss: 'houtenMis' },
+        { text: 'De stenen brug', keyword: 'stenen', miss: 'stenenMis' },
       ],
       variants: [
         {
@@ -298,9 +322,9 @@ Met een pijnlijke knie komt ze aan de overkant. Dat was gevaarlijk. Ze had beter
 Mila kijkt in haar rugzak. Ze heeft een appel, een dikke tuinhandschoen en een stuk touw.`,
       question: 'Hoe helpt Mila de vos?',
       choices: [
-        { text: 'Ze geeft de vos haar appel', miss: 'appelMis' },
-        { text: 'Ze pakt de tuinhandschoen', miss: 'handschoenMis' },
-        { text: 'Ze pakt het touw', miss: 'touwMis' },
+        { text: 'Ze geeft de vos haar appel', keyword: 'appel', miss: 'appelMis' },
+        { text: 'Ze pakt de tuinhandschoen', keyword: 'handschoen', miss: 'handschoenMis' },
+        { text: 'Ze pakt het touw', keyword: 'touw', miss: 'touwMis' },
       ],
       variants: [
         {
@@ -340,7 +364,7 @@ Mila kijkt in haar rugzak. Ze heeft een appel, een dikke tuinhandschoen en een s
       text: `De vos eet de appel op. "Lekker," zegt hij, "maar daar heb ik nu niet zoveel aan."
 
 Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}. Het lukt, al duurt het even. De vos is nu wel heel moe.`,
-      next: 'eik',
+      next: 'vertellen',
       sets: ['vos'],
     },
 
@@ -352,7 +376,7 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
       text: `Mila trekt de dikke tuinhandschoen aan. Maar wat moet ze er nu mee? "Daar heb ik niets aan," zegt de vos zachtjes.
 
 Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}. Het lukt, al duurt het even. De vos is nu wel heel moe.`,
-      next: 'eik',
+      next: 'vertellen',
       sets: ['vos'],
     },
 
@@ -364,7 +388,7 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
       text: `Mila pakt het touw en houdt het omhoog. "Wat moet ik met een touw?" vraagt de vos verbaasd.
 
 Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}. Het lukt, al duurt het even. De vos is nu wel heel moe.`,
-      next: 'eik',
+      next: 'vertellen',
       sets: ['vos'],
     },
 
@@ -374,8 +398,31 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
       title: 'Een nieuwe vriend',
       illustration: 'fox',
       text: `Het lukt! De vos springt overeind en zwaait met zijn staart. "Dank je wel!" roept hij blij. "Kom, ik weet waar je kat is."`,
-      next: 'eik',
+      next: 'vertellen',
       sets: ['vriend'],
+    },
+
+    // Puzzel: tijdvolgorde. Mila vertelt de vos wat er tot nu toe gebeurde.
+    vertellen: {
+      kind: 'puzzle',
+      chapter: 'Hoofdstuk 4',
+      title: 'Mila vertelt',
+      illustration: 'fox',
+      text: `Onderweg vraagt de vos: "Hoe ben je eigenlijk helemaal hier gekomen?"
+
+Mila denkt even na. Ze wil het verhaal goed vertellen, van het begin tot nu.`,
+      puzzle: {
+        type: 'order',
+        prompt: 'Help Mila vertellen. Tik de gebeurtenissen aan in de volgorde waarin ze gebeurden.',
+        items: [
+          'Mila vindt een plukje kattenhaar bij {plek}.',
+          'De uil vertelt Mila de weg.',
+          'Mila staat bij de holle boom.',
+          'Mila gaat over de rivier.',
+          'Mila helpt de vos.',
+        ],
+      },
+      next: 'eik',
     },
 
     // Hoofdstuk 5: oorzaak en gevolg
@@ -391,17 +438,17 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
 Mila wil hem zo graag naar beneden halen.`,
       question: 'Hoe krijgt Mila Pluis naar beneden?',
       choices: [
-        { text: 'Ze roept hard naar hem', miss: 'roepen' },
-        { text: 'Ze schudt aan de boom', miss: 'schudden' },
-        { text: 'Ze gaat zachtjes zitten en praat rustig', miss: 'zachtjesMis' },
-        { text: 'Ze zet een lange tak tegen de stam', miss: 'takMis' },
+        { text: 'Ze roept hard naar hem', keyword: 'roep', miss: 'roepen' },
+        { text: 'Ze schudt aan de boom', keyword: 'schud', miss: 'schudden' },
+        { text: 'Ze gaat zachtjes zitten en praat rustig', keyword: 'rustig', miss: 'zachtjesMis' },
+        { text: 'Ze zet een lange tak tegen de stam', keyword: 'tak', miss: 'takMis' },
       ],
       variants: [
         {
           fits: 2,
-          clue: 'Sindsdien is hij bang voor harde geluiden.',
+          clue: 'Sinds het onweer is hij bang voor harde geluiden.',
           vars: {
-            angst: `"Hij schrok vannacht van het onweer," zegt de vos. "Door de harde donder rende hij in paniek de boom in. Sindsdien is hij bang voor harde geluiden."`,
+            angst: `"Hij schrok vannacht van het onweer," zegt de vos. "Door de harde donder rende hij in paniek de boom in. Er zitten genoeg takken om langs naar beneden te klimmen, maar hij durft niet. Sinds het onweer is hij bang voor harde geluiden. Roepen of aan de boom schudden maakt het alleen maar erger. Hij moet eerst weer rustig worden."`,
             oplossingPluis: 'zachtjes zitten en rustig tegen hem praten',
           },
         },
@@ -409,7 +456,7 @@ Mila wil hem zo graag naar beneden halen.`,
           fits: 3,
           clue: 'Hij heeft iets nodig waarlangs hij naar beneden kan lopen.',
           vars: {
-            angst: `"Hij is niet bang," zegt de vos. "Maar de onderste takken zijn afgebroken, dus hij kan niet meer naar beneden springen. Hij heeft iets nodig waarlangs hij naar beneden kan lopen."`,
+            angst: `"Hij is niet bang," zegt de vos. "Roepen, aan de boom schudden of rustig tegen hem praten helpt dus niets: hij wíl wel naar beneden. Maar de onderste takken zijn afgebroken, dus hij kan niet meer springen. Hij heeft iets nodig waarlangs hij naar beneden kan lopen."`,
             oplossingPluis: 'een lange tak schuin tegen de stam zetten',
           },
         },
@@ -520,4 +567,18 @@ Die avond in bed denkt Mila aan de uil en de vos. Hadden ze haar niet steeds aan
     brug: { label: 'Geschrokken op de brug', illustration: 'shaky', tone: 'bad' },
     vos: { label: 'De vos is moe', illustration: 'tiredFox', tone: 'bad' },
   },
+
+  // Moeilijke woorden. De uitleg helpt het woord te begrijpen, maar verklapt nooit welke keuze past.
+  words: [
+    { forms: ['meel'], meaning: 'Fijn gemalen graan. Van meel bak je brood.' },
+    { forms: ['varens'], meaning: 'Groene planten met lange bladeren die op veren lijken. Ze groeien vaak in het bos.' },
+    { forms: ['stapstenen'], meaning: 'Grote platte stenen in het water. Je stapt van de ene naar de andere.' },
+    { forms: ['moeras'], meaning: 'Natte, zachte grond waar je in weg kunt zakken.' },
+    { forms: ['rot', 'rotte'], meaning: 'Oud en zacht geworden, zodat het makkelijk kapot gaat.' },
+    { forms: ['leuning'], meaning: 'Een stang langs een brug of trap waar je je aan vasthoudt.' },
+    { forms: ['mos'], meaning: 'Een zacht, groen plantje dat op stenen en bomen groeit. Nat mos is glad.' },
+    { forms: ['braamstruik'], meaning: 'Een struik met bramen en scherpe stekels.' },
+    { forms: ['doornen'], meaning: 'Scherpe punten aan een plant, waar je je aan kunt prikken.' },
+    { forms: ['onweer'], meaning: 'Slecht weer met bliksem en harde donder.' },
+  ],
 }

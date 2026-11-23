@@ -921,3 +921,244 @@
     margin: 12px 20px 0;
   }
 }
+
+/* Word help: difficult words get a dotted line; tapping shows a short explanation under the paragraph */
+.word {
+  display: inline;
+  padding: 0;
+  border: 0;
+  border-bottom: 2px dotted var(--blue);
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  cursor: help;
+}
+
+.word:hover,
+.word.is-open {
+  color: var(--blue-dark);
+  border-bottom-style: solid;
+}
+
+.word-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-small);
+  background: var(--blue-soft);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.5;
+  animation: trace-in 250ms ease;
+}
+
+.word-card > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--blue);
+}
+
+.word-card p {
+  flex: 1;
+}
+
+.word-card strong {
+  display: block;
+  color: var(--blue-dark);
+  font-weight: 600;
+}
+
+.word-card-close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-soft);
+}
+
+.word-card-close:hover {
+  background: rgb(27 149 208 / 15%);
+}
+
+/* Puzzles: chips to tap, green when a part is right */
+.puzzle {
+  display: grid;
+  gap: 16px;
+  padding: 28px 48px 36px;
+  border-top: 1px solid var(--line);
+  background: var(--paper-footer);
+}
+
+.puzzle h2 {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.puzzle h2 svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--purple);
+}
+
+.puzzle > .button-primary {
+  justify-self: start;
+}
+
+.puzzle-chip {
+  padding: 10px 14px;
+  border: 2px solid var(--blue-soft);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  text-align: left;
+  transition:
+    border-color 150ms,
+    background-color 150ms;
+}
+
+.puzzle-chip:hover {
+  border-color: var(--blue);
+}
+
+.puzzle-chip.is-picked {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: white;
+}
+
+.order-slots {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.order-slots li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+}
+
+.slot-number {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--sand-dark);
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.order-slots li.is-locked .slot-number {
+  background: var(--green);
+  color: white;
+}
+
+.slot-empty {
+  flex: 1;
+  min-height: 44px;
+  border: 2px dashed var(--sand-dark);
+  border-radius: var(--radius-small);
+  color: transparent;
+}
+
+.order-slots button {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 2px solid var(--blue);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  text-align: left;
+}
+
+.order-slots button svg {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+.order-slots li.is-locked button {
+  border-color: var(--green);
+  background: #e8f6f0;
+  cursor: default;
+}
+
+.order-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.match-rows {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.match-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.match-rows li.is-locked .match-left {
+  color: var(--green-dark);
+}
+
+.match-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.match-answer {
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: var(--radius-small);
+  background: #e8f6f0;
+  color: var(--green-dark);
+}
+
+.puzzle-feedback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+}
+
+.puzzle-feedback.is-solved {
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .puzzle {
+    padding: 22px 20px 28px;
+  }
+}

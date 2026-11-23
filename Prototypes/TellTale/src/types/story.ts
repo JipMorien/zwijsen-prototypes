@@ -10,6 +10,11 @@ export type TextStructure = 'oorzaak-gevolg' | 'tijdvolgorde' | 'vergelijken' | 
 
 export type StoryChoice = {
   text: string
+  /**
+   * The word that names this choice in the text (e.g. 'molen'). Every variant has to mention the
+   * keyword of every choice, so finding the one word that matches a button never gives the answer.
+   */
+  keyword: string
   /** Passage shown when this choice does not fit the text. Needed if the choice is wrong in any variant. */
   miss?: string
 }
@@ -94,7 +99,39 @@ export type FinaleNode = BaseNode & {
   sets?: string[]
 }
 
-export type StoryNode = DecisionNode | PassageNode | FinaleNode
+/**
+ * A small puzzle about a text structure, inside the story. The child tries until it is right and
+ * gets a hint after a wrong try; it never counts towards the ending.
+ */
+export type Puzzle =
+  | {
+      /** tijdvolgorde: put the events in the order they happened. Items are given in the right order. */
+      type: 'order'
+      prompt: string
+      items: string[]
+    }
+  | {
+      /** oorzaak-gevolg: match what Mila sees to what it means. */
+      type: 'match'
+      prompt: string
+      pairs: { left: string; right: string }[]
+    }
+
+export type PuzzleNode = BaseNode & {
+  kind: 'puzzle'
+  puzzle: Puzzle
+  next: string
+  sets?: string[]
+}
+
+export type StoryNode = DecisionNode | PassageNode | PuzzleNode | FinaleNode
+
+/** A difficult word with a short explanation. The child taps the word in the text to see it. */
+export type WordHelp = {
+  /** The forms that appear in the text, e.g. ['rot', 'rotte']. */
+  forms: string[]
+  meaning: string
+}
 
 export type StoryEnding = {
   /** Lowest number of choices that fit the text needed for this ending. */
@@ -128,6 +165,8 @@ export type Story = {
   endings: StoryEnding[]
   /** Flags shown as traces on the 'Onderweg' card. Every flag the story sets needs one. */
   traces: Record<string, Trace>
+  /** Difficult words that get a dotted line and an explanation. Never explain the answer to a choice. */
+  words: WordHelp[]
   /** The sky slowly turns to evening as the day goes on, faster when clues are missed. */
   dusk?: boolean
 }

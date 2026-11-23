@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { stories } from '../prototype-data/stories'
 import { activeTraces, clueMarked, duskLevel, INK_PER_PAGE, inkLeft, markAccuracy, splitSentences, type Mark } from './reading'
+import { correctPlaces, shuffledOrder, splitWords } from './puzzle'
 import { renderText, storyVars, type Decision } from './story'
 
 const mark = (text: string, nodeId = 'n'): Mark => ({ nodeId, chapter: '', text })
@@ -82,5 +83,29 @@ describe('markAccuracy', () => {
     const clue = story.nodes.start.kind === 'decision' ? story.nodes.start.variants[0].clue : ''
     const marks = [mark(splitSentences(clue)[0], 'start'), mark('Op een zonnige ochtend loopt Mila het Fluisterbos in.', 'start')]
     expect(markAccuracy(story, playthrough, marks)).toEqual({ marked: 2, onClue: 1 })
+  })
+})
+
+describe('puzzles', () => {
+  it('never starts in the right order', () => {
+    for (let i = 0; i < 50; i++) {
+      const order = shuffledOrder(4)
+      expect([...order].sort()).toEqual([0, 1, 2, 3])
+      expect(order).not.toEqual([0, 1, 2, 3])
+    }
+  })
+
+  it('tells which places are right', () => {
+    expect(correctPlaces([0, 2, 1, 3])).toEqual([true, false, false, true])
+  })
+})
+
+describe('splitWords', () => {
+  const words = [{ forms: ['rot', 'rotte'], meaning: 'oud' }, { forms: ['mos'], meaning: 'plantje' }]
+
+  it('finds whole words in any case, and not inside other words', () => {
+    const pieces = splitWords('De rotte planken en het Mos. Een rots en mosterd.', words)
+    expect(pieces.filter(piece => piece.word).map(piece => piece.text)).toEqual(['rotte', 'Mos'])
+    expect(pieces.map(piece => piece.text).join('')).toBe('De rotte planken en het Mos. Een rots en mosterd.')
   })
 })

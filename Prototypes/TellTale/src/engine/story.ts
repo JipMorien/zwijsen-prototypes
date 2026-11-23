@@ -1,4 +1,4 @@
-import type { DecisionNode, Story, StoryEnding } from '../types/story'
+import type { DecisionNode, Story, StoryEnding, StoryNode } from '../types/story'
 
 export type Decision = {
   nodeId: string
@@ -102,7 +102,7 @@ export function decisionCount(story: Story): number {
     if (node.kind === 'decision') {
       count += 1
       id = node.onFit
-    } else if (node.kind === 'passage') {
+    } else if (node.kind === 'passage' || node.kind === 'puzzle') {
       id = node.next
     } else {
       id = undefined
@@ -116,11 +116,20 @@ export function decisionNode(story: Story, nodeId: string): DecisionNode | undef
   return node?.kind === 'decision' ? node : undefined
 }
 
-function textsOf(story: Story): string[] {
+/** Every text a child can see: titles, story texts, puzzle items and endings. */
+export function textsOf(story: Story): string[] {
   return [
-    ...Object.values(story.nodes).flatMap(node => [node.title, node.text]),
+    ...Object.values(story.nodes).flatMap(node => [node.title, node.text, ...puzzleTexts(node)]),
     ...story.endings.flatMap(ending => [ending.title, ending.text]),
   ]
+}
+
+function puzzleTexts(node: StoryNode): string[] {
+  if (node.kind !== 'puzzle') return []
+  const { puzzle } = node
+  return puzzle.type === 'order'
+    ? [puzzle.prompt, ...puzzle.items]
+    : [puzzle.prompt, ...puzzle.pairs.flatMap(pair => [pair.left, pair.right])]
 }
 
 /** Returns a list of problems; an empty list means the story is playable and fair. */
@@ -174,6 +183,12 @@ export function validateStory(story: Story): string[] {
       if (!rendered.includes(variant.clue)) {
         problems.push(`${id} variant ${index + 1}: de aanwijzing staat niet letterlijk in de tekst`)
       }
+      // Scan-proof: the text names every choice, so matching one word to a button gives nothing away.
+      for (const choice of node.choices) {
+        if (!rendered.toLowerCase().includes(choice.keyword.toLowerCase())) {
+          problems.push(`${id} variant ${index + 1}: keuze "${choice.text}" (${choice.keyword}) wordt niet genoemd in de tekst`)
+        }
+      }
     })
     node.choices.forEach((choice, index) => {
       const canBeWrong = node.variants.some(variant => variant.fits !== index)
@@ -181,12 +196,35 @@ export function validateStory(story: Story): string[] {
     })
   }
 
+  // Word help: every word appears somewhere, and is not explained twice.
+  const variantTexts = decisionEntries(story).flatMap(([, node]) => node.variants.flatMap(variant => Object.values(variant.vars)))
+  const allText = [...textsOf(story), ...variantTexts].join(' ').toLowerCase()
+  const seenForms = new Set<string>()
+  for (const word of story.words) {
+    if (!word.forms.some(form => allText.includes(form.toLowerCase()))) {
+      problems.push(`woord "${word.forms[0]}" staat nergens in het verhaal`)
+    }
+    for (const form of word.forms) {
+      if (seenForms.has(form.toLowerCase())) problems.push(`woord "${form}" wordt twee keer uitgelegd`)
+      seenForms.add(form.toLowerCase())
+    }
+  }
+
+  // Puzzles: enough items, and no two the same, so there is exactly one right answer.
+  for (const [id, node] of Object.entries(story.nodes)) {
+    if (node.kind !== 'puzzle') continue
+    const { puzzle } = node
+    const items = puzzle.type === 'order' ? puzzle.items : puzzle.pairs.map(pair => pair.right)
+    if (items.length < 3) problems.push(`${id}: een puzzel heeft minstens 3 onderdelen nodig`)
+    if (new Set(items).size !== items.length) problems.push(`${id}: twee onderdelen van de puzzel zijn hetzelfde`)
+  }
+
   // Links: every target exists.
   for (const [id, node] of Object.entries(story.nodes)) {
     const targets =
       node.kind === 'decision'
         ? [node.onFit, ...node.choices.flatMap(choice => (choice.miss ? [choice.miss] : []))]
-        : node.kind === 'passage'
+        : node.kind === 'passage' || node.kind === 'puzzle'
           ? [node.next]
           : []
     for (const target of targets) {
@@ -209,7 +247,7 @@ export function validateStory(story: Story): string[] {
     if (node.kind === 'decision') {
       walk(node.onFit, decisions + 1, nextPath)
       node.choices.forEach(choice => choice.miss && walk(choice.miss, decisions + 1, nextPath))
-    } else if (node.kind === 'passage') walk(node.next, decisions, nextPath)
+    } else if (node.kind === 'passage' || node.kind === 'puzzle') walk(node.next, decisions, nextPath)
     else decisionsPerPath.add(decisions)
   }
   walk(story.startNode, 0, [])

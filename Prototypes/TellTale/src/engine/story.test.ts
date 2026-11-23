@@ -12,6 +12,7 @@ import {
   renderText,
   score,
   storyVars,
+  textsOf,
   validateStory,
   type Decision,
   type Playthrough,
@@ -42,10 +43,10 @@ describe.each(stories.map(story => [story.id, story] as const))('story %s', (_id
   })
 
   it('leaves no {markers} or [[markers]] in any text, for any variant and any path', () => {
-    const allFlags = new Set(['omweg', 'scheur', 'natteSchoen', 'brug', 'vos'])
+    const allFlags = new Set(Object.keys(story.traces))
     for (const playthrough of allPlaythroughs(story)) {
       const vars = storyVars(story, playthrough)
-      const texts = [...Object.values(story.nodes).map(n => n.text), ...story.endings.map(e => e.text)]
+      const texts = textsOf(story)
       for (const text of texts) {
         for (const flags of [new Set<string>(), allFlags]) {
           expect(renderText(text, vars, flags)).not.toMatch(/\{\w+\}|\[\[|\]\]/)
@@ -163,15 +164,15 @@ describe('validateStory', () => {
         chapter: '',
         title: '',
         illustration: 'forest',
-        text: 'De sleutel ligt {waar}.',
+        text: 'De sleutel ligt niet {niet}, maar {waar}.',
         question: 'Waar?',
         choices: [
-          { text: 'mat', miss: 'mis' },
-          { text: 'kast', miss: 'mis' },
+          { text: 'mat', keyword: 'mat', miss: 'mis' },
+          { text: 'kast', keyword: 'kast', miss: 'mis' },
         ],
         variants: [
-          { fits: 0, clue: 'De sleutel ligt onder de mat.', vars: { waar: 'onder de mat' } },
-          { fits: 1, clue: 'De sleutel ligt in de kast.', vars: { waar: 'in de kast' } },
+          { fits: 0, clue: 'maar onder de mat.', vars: { niet: 'in de kast', waar: 'onder de mat' } },
+          { fits: 1, clue: 'maar in de kast.', vars: { niet: 'onder de mat', waar: 'in de kast' } },
         ],
         onFit: 'end',
         structure: 'oorzaak-gevolg',
@@ -184,6 +185,7 @@ describe('validateStory', () => {
       { minScore: 1, title: '', illustration: 'forest', text: '' },
     ],
     traces: { fout: { label: 'Fout', illustration: 'forest', tone: 'bad' } },
+    words: [{ forms: ['sleutel'], meaning: 'Daarmee open je een deur.' }],
   })
   const decision = (story: Story) => {
     const node = story.nodes.a
@@ -197,13 +199,13 @@ describe('validateStory', () => {
 
   it('catches a clue that is not in the text of its variant', () => {
     const story = tiny()
-    decision(story).variants[1].clue = 'De sleutel ligt onder de mat.'
+    decision(story).variants[1].clue = 'De sleutel ligt op tafel.'
     expect(validateStory(story).join()).toContain('variant 2: de aanwijzing')
   })
 
   it('catches variants with different variables', () => {
     const story = tiny()
-    decision(story).variants[1].vars = { ergens: 'in de kast' }
+    decision(story).variants[1].vars = { ergens: 'in de kast', waar: 'in de kast' }
     expect(validateStory(story).join()).toContain('andere variabelen')
   })
 
@@ -217,7 +219,7 @@ describe('validateStory', () => {
 
   it('catches a wrong-able choice without a miss passage, and a broken link', () => {
     const story = tiny()
-    decision(story).choices[0] = { text: 'mat' }
+    decision(story).choices[0] = { text: 'mat', keyword: 'mat' }
     decision(story).onFit = 'nergens'
     const problems = validateStory(story).join(' | ')
     expect(problems).toContain('keuze 1 kan fout zijn')
@@ -230,5 +232,30 @@ describe('validateStory', () => {
     const problems = validateStory(story).join(' | ')
     expect(problems).toContain('vlag "fout" heeft geen spoor')
     expect(problems).toContain('spoor "ander" wordt nergens gezet')
+  })
+
+  it('catches a text that does not name every choice (scannable)', () => {
+    const story = tiny()
+    decision(story).text = 'De sleutel ligt {waar}.'
+    decision(story).variants.forEach(variant => (variant.clue = `De sleutel ligt ${variant.vars.waar}.`))
+    expect(validateStory(story).join(' | ')).toContain('wordt niet genoemd in de tekst')
+  })
+
+  it('catches a word that is not in the story and a puzzle with doubles', () => {
+    const story = tiny()
+    story.words = [{ forms: ['olifant'], meaning: 'Een groot dier.' }]
+    story.nodes.p = {
+      kind: 'puzzle',
+      chapter: '',
+      title: '',
+      illustration: 'forest',
+      text: '',
+      puzzle: { type: 'order', prompt: '', items: ['a', 'a', 'b'] },
+      next: 'end',
+    }
+    story.nodes.mis = { ...story.nodes.mis, kind: 'passage', next: 'p', sets: ['fout'] } as Story['nodes'][string]
+    const problems = validateStory(story).join(' | ')
+    expect(problems).toContain('woord "olifant" staat nergens')
+    expect(problems).toContain('twee onderdelen van de puzzel zijn hetzelfde')
   })
 })
