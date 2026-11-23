@@ -1,20 +1,70 @@
+/*
+ * Palette taken from the Estafette leestrainer: the blue of its navigation buttons,
+ * the Estafette red, the green of its character cards and the purple of the leesrapport.
+ */
 :root {
   color-scheme: light;
+
+  --blue: #1b95d0;
+  --blue-dark: #1478a9;
+  --blue-soft: #e6f3fa;
+  --red: #b3181f;
+  --red-soft: #fbe9e9;
+  --green: #18a374;
+  --green-dark: #0f7e59;
+  --purple: #43308f;
+  --yellow: #ffd84a;
+  --marker: #ffe680;
+
+  --ink: #1f2a37;
+  --ink-soft: #4a5565;
+  --muted: #6b7280;
+  --sand: #f3ede3;
+  --sand-dark: #e7dfd1;
+  --paper: #ffffff;
+  --paper-footer: #f6f3ee;
+  --line: #e4ddd1;
+
+  --radius: 14px;
+  --radius-small: 10px;
+  --shadow: 0 1px 2px rgb(31 42 55 / 6%), 0 8px 24px rgb(31 42 55 / 6%);
+
+  --font: 'Lexend', system-ui, sans-serif;
+  --font-hand: 'Patrick Hand', 'Comic Sans MS', cursive;
+
+  font-family: var(--font);
+  color: var(--ink);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
+  background: var(--sand);
 }
 
 h1,
-h2 {
-  color: #26334a;
-}
-
+h2,
 p {
   margin: 0;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
 }

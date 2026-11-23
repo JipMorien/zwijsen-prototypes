@@ -27,11 +27,39 @@ export type DecisionVariant = {
   vars: Record<string, string>
 }
 
+/** Placeholder illustrations, drawn as line icons until real artwork is available. */
+export type Illustration =
+  | 'forest'
+  | 'mill'
+  | 'stream'
+  | 'flowers'
+  | 'tracks'
+  | 'owl'
+  | 'thorns'
+  | 'slope'
+  | 'swamp'
+  | 'bridge'
+  | 'stones'
+  | 'fox'
+  | 'apple'
+  | 'glove'
+  | 'rope'
+  | 'tree'
+  | 'loud'
+  | 'shake'
+  | 'cat'
+  | 'wish'
+  | 'home'
+  | 'night'
+
+/** Cover colours, taken from the Estafette palette. */
+export type StoryColor = 'red' | 'green' | 'blue' | 'purple'
+
 type BaseNode = {
   chapter: string
   title: string
   text: string
-  image: string
+  illustration: Illustration
 }
 
 /** A moment where the child decides, and only a careful reader knows the wise choice. */
@@ -66,7 +94,7 @@ export type StoryEnding = {
   /** Lowest number of choices that fit the text needed for this ending. */
   minScore: number
   title: string
-  image: string
+  illustration: Illustration
   text: string
 }
 
@@ -74,7 +102,10 @@ export type Story = {
   id: string
   title: string
   description: string
-  emoji: string
+  cover: Illustration
+  color: StoryColor
+  /** Reading level shown as a badge, in the same style as Estafette (e.g. M5 = midden groep 5). */
+  level: string
   category: string
   time: string
   available: boolean

@@ -12,7 +12,9 @@ export const fluisterbos: Story = {
   id: 'fluisterbos',
   title: 'Het geheim van het Fluisterbos',
   description: 'Help Mila haar kat terug te vinden. Lees goed: hoe beter je leest, hoe mooier het einde.',
-  emoji: '🌳',
+  cover: 'forest',
+  color: 'green',
+  level: 'M5',
   category: 'Avontuur',
   time: '10 minuten',
   available: true,
@@ -24,7 +26,7 @@ export const fluisterbos: Story = {
       kind: 'decision',
       chapter: 'Hoofdstuk 1',
       title: 'Waar is Pluis?',
-      image: '🌳',
+      illustration: 'forest',
       text: `Op een zonnige ochtend loopt Mila het Fluisterbos in. Haar witte kat Pluis is sinds gisteravond verdwenen.
 
 Mama zei vanochtend nog: "{moeder}"
@@ -32,9 +34,9 @@ Mama zei vanochtend nog: "{moeder}"
 Bij de ingang van het bos staat een oud bordje met drie pijlen. Eén pijl wijst naar de beek, één naar de oude molen en één naar de heuvel met bloemen.`,
       question: 'Welke kant gaat Mila op?',
       choices: [
-        { text: '🌾 Naar de oude molen', miss: 'molenMis' },
-        { text: '💧 Naar de beek', miss: 'beekMis' },
-        { text: '🌸 Naar de bloemenheuvel', miss: 'heuvelMis' },
+        { text: 'Naar de oude molen', miss: 'molenMis' },
+        { text: 'Naar de beek', miss: 'beekMis' },
+        { text: 'Naar de bloemenheuvel', miss: 'heuvelMis' },
       ],
       variants: [
         {
@@ -73,7 +75,7 @@ Bij de ingang van het bos staat een oud bordje met drie pijlen. Eén pijl wijst 
       kind: 'passage',
       chapter: 'Hoofdstuk 1',
       title: 'Een stoffige molen',
-      image: '🌾',
+      illustration: 'mill',
       text: `Mila loopt helemaal naar de oude molen. Het is een lange wandeling en het pad zit vol kuilen.
 
 In de molen is het donker en stoffig. Mila niest drie keer. Een paar muizen rennen weg, maar van Pluis is geen spoor.
@@ -87,7 +89,7 @@ Wat zei mama ook alweer? {reden}! Mila draait zich om en loopt naar {plek}.`,
       kind: 'passage',
       chapter: 'Hoofdstuk 1',
       title: 'Alleen maar water',
-      image: '💧',
+      illustration: 'stream',
       text: `Mila loopt naar de beek. Het water klatert en er zwemmen kleine visjes. Maar Pluis is nergens te zien.
 
 Op een natte steen glijdt Mila bijna uit. Dat scheelde niet veel!
@@ -101,7 +103,7 @@ Wat zei mama ook alweer? {reden}! Mila loopt snel verder naar {plek}.`,
       kind: 'passage',
       chapter: 'Hoofdstuk 1',
       title: 'Alleen maar bloemen',
-      image: '🌸',
+      illustration: 'flowers',
       text: `Mila klimt de bloemenheuvel op. Het ruikt er heerlijk, maar er zoemen ook heel veel bijen.
 
 Eén bij landt op haar neus. Mila blijft stokstijf staan tot hij weer wegvliegt. Pfoe! Van Pluis is geen spoor.
@@ -115,7 +117,7 @@ Wat zei mama ook alweer? {reden}! Mila loopt de heuvel af, op weg naar {plek}.`,
       kind: 'passage',
       chapter: 'Hoofdstuk 1',
       title: 'Een spoor!',
-      image: '🐾',
+      illustration: 'tracks',
       text: `Bij {plek} ziet Mila iets wits liggen. Een plukje kattenhaar! Pluis is hier echt geweest.
 
 [[omweg: Mila is wel al een beetje moe van de omweg die ze heeft gemaakt.]]
@@ -129,7 +131,7 @@ Naast het plukje haar lopen kleine pootafdrukken het bos in. Mila volgt ze, diep
       kind: 'decision',
       chapter: 'Hoofdstuk 2',
       title: 'De wijze uil',
-      image: '🦉',
+      illustration: 'owl',
       text: `De pootafdrukken houden op bij een omgevallen boom. Op de stam zit een uil. "Zoek je een witte kat?" vraagt hij. "Ik zag hem vannacht. Luister goed, dan vertel ik je de weg."
 
 "{route}"
@@ -137,9 +139,9 @@ Naast het plukje haar lopen kleine pootafdrukken het bos in. Mila volgt ze, diep
 Mila bedankt de uil en loopt het pad af. Na een tijdje ziet ze een grote boom met een gat in de stam. De holle boom! Hier splitst het pad zich in drieën.`,
       question: 'Welke kant gaat Mila op?',
       choices: [
-        { text: '⬅️ Linksaf', miss: 'linksMis' },
-        { text: '➡️ Rechtsaf', miss: 'rechtsMis' },
-        { text: '⬆️ Rechtdoor', miss: 'rechtdoorMis' },
+        { text: 'Linksaf', miss: 'linksMis' },
+        { text: 'Rechtsaf', miss: 'rechtsMis' },
+        { text: 'Rechtdoor', miss: 'rechtdoorMis' },
       ],
       variants: [
         {
@@ -178,7 +180,7 @@ Mila bedankt de uil en loopt het pad af. Na een tijdje ziet ze een grote boom me
       kind: 'passage',
       chapter: 'Hoofdstuk 2',
       title: 'Doornen!',
-      image: '🌵',
+      illustration: 'thorns',
       text: `Mila slaat linksaf. Het pad wordt steeds smaller, tot ze voor een muur van doornstruiken staat. Haar mouw blijft haken en scheurt een stukje open.
 
 Wat had de uil gezegd? Bij de holle boom moest ze {richting}! Mila loopt terug en probeert het opnieuw.`,
@@ -190,7 +192,7 @@ Wat had de uil gezegd? Bij de holle boom moest ze {richting}! Mila loopt terug e
       kind: 'passage',
       chapter: 'Hoofdstuk 2',
       title: 'Een steile helling',
-      image: '⛰️',
+      illustration: 'slope',
       text: `Mila slaat rechtsaf. Het pad loopt dood bij een steile helling vol losse stenen. Mila glijdt een stukje naar beneden en haalt haar mouw open aan een tak.
 
 Wat had de uil gezegd? Bij de holle boom moest ze {richting}! Mila klimt terug en probeert het opnieuw.`,
@@ -202,7 +204,7 @@ Wat had de uil gezegd? Bij de holle boom moest ze {richting}! Mila klimt terug e
       kind: 'passage',
       chapter: 'Hoofdstuk 2',
       title: 'Natte voeten',
-      image: '🐸',
+      illustration: 'swamp',
       text: `Mila loopt rechtdoor. De grond wordt steeds zachter. Plotseling zakt haar voet weg in de modder. Bah! Haar schoen is helemaal nat en vies. Een kikker kijkt haar verbaasd aan.
 
 Nu weet Mila het weer: hier begint het moeras. Bij de holle boom moest ze {richting}! Met een soppende schoen loopt ze terug.`,
@@ -215,7 +217,7 @@ Nu weet Mila het weer: hier begint het moeras. Bij de holle boom moest ze {richt
       kind: 'decision',
       chapter: 'Hoofdstuk 3',
       title: 'Twee bruggen',
-      image: '🌉',
+      illustration: 'bridge',
       text: `Het pad eindigt bij een brede rivier. Aan de overkant hoort Mila een zacht gemiauw. Pluis!
 
 [[natteSchoen: Haar natte schoen soppt bij elke stap.]]
@@ -225,8 +227,8 @@ Er zijn twee bruggen. {bruggen}
 Mila wil zo snel mogelijk naar Pluis. Maar ze wil ook veilig aan de overkant komen.`,
       question: 'Over welke brug gaat Mila?',
       choices: [
-        { text: '🪵 De houten brug', miss: 'houtenMis' },
-        { text: '🪨 De stenen brug', miss: 'stenenMis' },
+        { text: 'De houten brug', miss: 'houtenMis' },
+        { text: 'De stenen brug', miss: 'stenenMis' },
       ],
       variants: [
         {
@@ -256,7 +258,7 @@ Mila wil zo snel mogelijk naar Pluis. Maar ze wil ook veilig aan de overkant kom
       kind: 'passage',
       chapter: 'Hoofdstuk 3',
       title: 'Krak!',
-      image: '🪵',
+      illustration: 'bridge',
       text: `Mila stapt op de houten brug. De rotte planken kraken onder haar voeten.
 
 Halverwege hoort ze een harde KRAK. Een plank breekt en valt in de rivier! Mila springt net op tijd naar de volgende plank.
@@ -270,7 +272,7 @@ Met trillende benen komt ze aan de overkant. Dat was gevaarlijk. Ze had beter {v
       kind: 'passage',
       chapter: 'Hoofdstuk 3',
       title: 'Spekglad!',
-      image: '🪨',
+      illustration: 'stones',
       text: `Mila stapt op de stenen brug. Het water stroomt over haar schoenen en de stenen zijn spekglad van het mos.
 
 Halverwege glijdt ze uit! Ze valt op haar knie en kan zich nog net vasthouden aan een steen.
@@ -285,7 +287,7 @@ Met een pijnlijke knie komt ze aan de overkant. Dat was gevaarlijk. Ze had beter
       kind: 'decision',
       chapter: 'Hoofdstuk 4',
       title: 'De vos onder de struik',
-      image: '🦊',
+      illustration: 'fox',
       text: `Aan de overkant hoort Mila gejammer. Onder een struik ligt een kleine vos.
 
 [[brug: Mila's benen trillen nog een beetje van de brug.]]
@@ -295,9 +297,9 @@ Met een pijnlijke knie komt ze aan de overkant. Dat was gevaarlijk. Ze had beter
 Mila kijkt in haar rugzak. Ze heeft een appel, een dikke tuinhandschoen en een stuk touw.`,
       question: 'Hoe helpt Mila de vos?',
       choices: [
-        { text: '🍎 Ze geeft de vos haar appel', miss: 'appelMis' },
-        { text: '🧤 Ze pakt de tuinhandschoen', miss: 'handschoenMis' },
-        { text: '🪢 Ze pakt het touw', miss: 'touwMis' },
+        { text: 'Ze geeft de vos haar appel', miss: 'appelMis' },
+        { text: 'Ze pakt de tuinhandschoen', miss: 'handschoenMis' },
+        { text: 'Ze pakt het touw', miss: 'touwMis' },
       ],
       variants: [
         {
@@ -333,7 +335,7 @@ Mila kijkt in haar rugzak. Ze heeft een appel, een dikke tuinhandschoen en een s
       kind: 'passage',
       chapter: 'Hoofdstuk 4',
       title: 'Een appel helpt niet',
-      image: '🍎',
+      illustration: 'apple',
       text: `De vos eet de appel op. "Lekker," zegt hij, "maar daar heb ik nu niet zoveel aan."
 
 Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}. Het lukt, al duurt het even. De vos is nu wel heel moe.`,
@@ -345,7 +347,7 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
       kind: 'passage',
       chapter: 'Hoofdstuk 4',
       title: 'Een handschoen helpt niet',
-      image: '🧤',
+      illustration: 'glove',
       text: `Mila trekt de dikke tuinhandschoen aan. Maar wat moet ze er nu mee? "Daar heb ik niets aan," zegt de vos zachtjes.
 
 Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}. Het lukt, al duurt het even. De vos is nu wel heel moe.`,
@@ -357,7 +359,7 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
       kind: 'passage',
       chapter: 'Hoofdstuk 4',
       title: 'Een touw helpt niet',
-      image: '🪢',
+      illustration: 'rope',
       text: `Mila pakt het touw en houdt het omhoog. "Wat moet ik met een touw?" vraagt de vos verbaasd.
 
 Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}. Het lukt, al duurt het even. De vos is nu wel heel moe.`,
@@ -369,7 +371,7 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
       kind: 'passage',
       chapter: 'Hoofdstuk 4',
       title: 'Een nieuwe vriend',
-      image: '🦊',
+      illustration: 'fox',
       text: `Het lukt! De vos springt overeind en zwaait met zijn staart. "Dank je wel!" roept hij blij. "Kom, ik weet waar je kat is."`,
       next: 'eik',
     },
@@ -379,7 +381,7 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
       kind: 'decision',
       chapter: 'Hoofdstuk 5',
       title: 'Hoog in de eik',
-      image: '🌳',
+      illustration: 'tree',
       text: `De vos brengt Mila naar een open plek met een enorme eik. [[vos: Hij loopt langzaam, want hij is nog moe.]] Helemaal bovenin ziet Mila iets wits. Het is Pluis!
 
 {angst}
@@ -387,10 +389,10 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
 Mila wil hem zo graag naar beneden halen.`,
       question: 'Hoe krijgt Mila Pluis naar beneden?',
       choices: [
-        { text: '📣 Ze roept hard naar hem', miss: 'roepen' },
-        { text: '🌳 Ze schudt aan de boom', miss: 'schudden' },
-        { text: '🤫 Ze gaat zachtjes zitten en praat rustig', miss: 'zachtjesMis' },
-        { text: '🪵 Ze zet een lange tak tegen de stam', miss: 'takMis' },
+        { text: 'Ze roept hard naar hem', miss: 'roepen' },
+        { text: 'Ze schudt aan de boom', miss: 'schudden' },
+        { text: 'Ze gaat zachtjes zitten en praat rustig', miss: 'zachtjesMis' },
+        { text: 'Ze zet een lange tak tegen de stam', miss: 'takMis' },
       ],
       variants: [
         {
@@ -418,7 +420,7 @@ Mila wil hem zo graag naar beneden halen.`,
       kind: 'finale',
       chapter: 'Hoofdstuk 5',
       title: 'Te hard!',
-      image: '🙀',
+      illustration: 'loud',
       text: `"PLUIS, KOM HIER!" roept Mila zo hard als ze kan.
 
 Pluis drukt zich nog dichter tegen de stam. Dat helpt dus niet.
@@ -430,7 +432,7 @@ Mila denkt na over wat de vos zei. Ze gaat {oplossingPluis}. Het duurt heel lang
       kind: 'finale',
       chapter: 'Hoofdstuk 5',
       title: 'Ritselende bladeren',
-      image: '🙀',
+      illustration: 'shake',
       text: `Mila schudt aan de boom. De bladeren ritselen en de takken kraken. Pluis klampt zich angstig vast aan zijn tak.
 
 Mila stopt meteen. Ze denkt na over wat de vos zei en gaat {oplossingPluis}. Het duurt heel lang, maar uiteindelijk is Pluis beneden.`,
@@ -440,7 +442,7 @@ Mila stopt meteen. Ze denkt na over wat de vos zei en gaat {oplossingPluis}. Het
       kind: 'finale',
       chapter: 'Hoofdstuk 5',
       title: 'Hij kan niet naar beneden',
-      image: '🐈',
+      illustration: 'cat',
       text: `Mila gaat zachtjes onder de boom zitten en praat rustig tegen Pluis. Pluis miauwt terug, maar hij komt niet. Hij kan echt niet naar beneden!
 
 Dan denkt Mila aan wat de vos zei. Ze gaat {oplossingPluis}. Het duurt even, maar dan is Pluis eindelijk beneden.`,
@@ -450,7 +452,7 @@ Dan denkt Mila aan wat de vos zei. Ze gaat {oplossingPluis}. Het duurt even, maa
       kind: 'finale',
       chapter: 'Hoofdstuk 5',
       title: 'Veel lawaai',
-      image: '🙀',
+      illustration: 'loud',
       text: `Mila sleept een lange tak naar de eik. Met veel lawaai schuurt de tak langs de stam. Pluis schrikt en klimt nog hoger!
 
 Dan denkt Mila aan wat de vos zei. Ze gaat {oplossingPluis}. Het duurt heel lang, maar uiteindelijk is Pluis beneden.`,
@@ -460,7 +462,7 @@ Dan denkt Mila aan wat de vos zei. Ze gaat {oplossingPluis}. Het duurt heel lang
       kind: 'finale',
       chapter: 'Hoofdstuk 5',
       title: 'Gevonden!',
-      image: '🐈',
+      illustration: 'cat',
       text: `Het werkt! Voorzichtig komt Pluis naar beneden. Dan springt hij zo in Mila's armen.
 
 Mila knuffelt hem stevig. "Ik heb je gevonden," fluistert ze.`,
@@ -471,7 +473,7 @@ Mila knuffelt hem stevig. "Ik heb je gevonden," fluistert ze.`,
     {
       minScore: 5,
       title: 'Het geheime einde: de wenssteen',
-      image: '✨',
+      illustration: 'wish',
       text: `Als Mila met Pluis naar huis wil lopen, begint er iets te fonkelen tussen de wortels van de eik. Het is een glinsterende steen.
 
 De uil landt naast haar. "Dat is een wenssteen," zegt hij. "Hij verschijnt alleen voor mensen die heel goed luisteren. En jij hebt vandaag naar alles goed geluisterd."
@@ -481,7 +483,7 @@ De vos komt er ook bij. Samen lopen ze naar de rand van het bos. Mila is ruim op
     {
       minScore: 3,
       title: 'Thuis voor het donker',
-      image: '🏡',
+      illustration: 'home',
       text: `Mila loopt met Pluis in haar armen naar huis. Haar benen zijn moe van de lange tocht.
 
 [[!vos: De vos loopt nog een stukje met haar mee tot aan de rand van het bos.]]
@@ -495,7 +497,7 @@ Het was een spannende dag. Toch denkt Mila dat het misschien sneller had gekund,
     {
       minScore: 0,
       title: 'Een lange, lange dag',
-      image: '🌙',
+      illustration: 'night',
       text: `Als Mila eindelijk thuiskomt, is het al donker. Ze is moe en mama was ongerust.
 
 [[natteSchoen: Haar schoen zit nog vol modder uit het moeras.]]

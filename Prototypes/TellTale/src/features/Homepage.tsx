@@ -1,5 +1,7 @@
+import { ChevronRight, Clock, Gem, Lock, Search } from 'lucide-react'
 import { loadAllProgress } from '../engine/progress'
 import type { Story } from '../types/story'
+import { Scene } from '../ui/illustrations'
 
 type HomePageProps = {
   stories: Story[]
@@ -11,86 +13,56 @@ function HomePage({ stories, onSelectStory }: HomePageProps) {
 
   return (
     <main className="home-page">
-      <header className="hero">
-        <div className="hero-content">
-          <span className="hero-label">📚 LEES, ONTDEK & KIES</span>
-          <h1>Welkom in jouw<br />verhalenwereld!</h1>
-          <p>
-            Duik in spannende verhalen, ontdek geheimen en bepaal
-            zelf hoe het verhaal verdergaat.
-          </p>
-          <a href="#stories" className="hero-button">
-            Kies een verhaal <span>↓</span>
-          </a>
-        </div>
+      <section className="home-intro">
+        <h1>Kies een verhaal</h1>
+        <p>Jij bepaalt hoe het verhaal verdergaat. Lees goed, want in de tekst staat wat slim is.</p>
+      </section>
 
-        <div className="hero-illustration" aria-hidden="true">
-          <span className="hero-book">📖</span>
-          <span className="hero-star star-one">✨</span>
-          <span className="hero-star star-two">⭐</span>
-          <span className="hero-star star-three">🌙</span>
-        </div>
-      </header>
-
-      <section className="stories-section" id="stories">
-        <div className="section-heading">
-          <div>
-            <span className="section-label">KIES JOUW AVONTUUR</span>
-            <h2>Welke wereld ontdek jij?</h2>
-            <p>Elk verhaal heeft verschillende keuzes en verrassende eindes.</p>
-          </div>
-          <span className="story-count">
-            {stories.filter(story => story.available).length}{' '}
-            {stories.filter(story => story.available).length === 1 ? 'verhaal' : 'verhalen'}
-          </span>
-        </div>
-
-        <div className="story-grid">
-          {stories.map(story => (
-            <article
-              className={`story-card ${!story.available ? 'story-card-disabled' : ''}`}
-              key={story.id}
-            >
-              <div className="story-card-image">
-                <span className="story-emoji">{story.emoji}</span>
-                <span className="story-category">{story.category}</span>
+      <div className="story-grid">
+        {stories.map(story => {
+          const result = progress[story.id]
+          return (
+            <article className={`book ${story.available ? '' : 'book-disabled'}`} key={story.id}>
+              <div className="book-cover">
+                <div className="book-cover-top">
+                  <span className="level-badge">{story.level}</span>
+                  <h2>{story.title}</h2>
+                  <span className="book-category">{story.category}</span>
+                </div>
+                <Scene name={story.cover} color={story.color} />
               </div>
 
-              <div className="story-card-content">
-                <h3>{story.title}</h3>
+              <div className="book-body">
                 <p>{story.description}</p>
 
-                {progress[story.id] && (
-                  <div className="story-progress">
-                    <span>
-                      🔎 Beste: {progress[story.id].bestScore} van {progress[story.id].total} aanwijzingen
-                    </span>
-                    <span className={progress[story.id].secretEndingFound ? 'secret-found' : 'secret-locked'}>
-                      {progress[story.id].secretEndingFound ? '✨ Geheim einde gevonden' : '🔒 Geheim einde nog niet gevonden'}
-                    </span>
-                  </div>
+                {result && (
+                  <ul className="book-progress" aria-label="Jouw voortgang">
+                    <li>
+                      <Search size={16} aria-hidden="true" />
+                      Beste: {result.bestScore} van {result.total} aanwijzingen
+                    </li>
+                    <li className={result.secretEndingFound ? 'is-found' : ''}>
+                      {result.secretEndingFound ? <Gem size={16} aria-hidden="true" /> : <Lock size={16} aria-hidden="true" />}
+                      {result.secretEndingFound ? 'Geheim einde gevonden' : 'Geheim einde nog niet gevonden'}
+                    </li>
+                  </ul>
                 )}
 
-                <div className="story-card-footer">
-                  <span>⏱ {story.time}</span>
-
-                  <button
-                    type="button"
-                    disabled={!story.available}
-                    onClick={() => onSelectStory(story.id)}
-                  >
-                    {story.available ? 'Lees verhaal →' : 'Binnenkort'}
+                <div className="book-footer">
+                  <span className="book-time">
+                    <Clock size={16} aria-hidden="true" />
+                    {story.time}
+                  </span>
+                  <button className="button-primary" disabled={!story.available} onClick={() => onSelectStory(story.id)}>
+                    {story.available ? (result ? 'Opnieuw lezen' : 'Lezen') : 'Binnenkort'}
+                    {story.available && <ChevronRight size={18} aria-hidden="true" />}
                   </button>
                 </div>
               </div>
             </article>
-          ))}
-        </div>
-      </section>
-
-      <footer className="home-footer">
-        <p>🌟 Lees goed, denk slim en ontdek waar jouw keuzes je brengen!</p>
-      </footer>
+          )
+        })}
+      </div>
     </main>
   )
 }

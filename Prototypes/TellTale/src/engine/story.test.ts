@@ -150,7 +150,9 @@ describe('validateStory', () => {
     id: 't',
     title: 't',
     description: '',
-    emoji: '',
+    cover: 'forest',
+    color: 'green',
+    level: 'M5',
     category: '',
     time: '',
     available: true,
@@ -160,7 +162,7 @@ describe('validateStory', () => {
         kind: 'decision',
         chapter: '',
         title: '',
-        image: '',
+        illustration: 'forest',
         text: 'De sleutel ligt {waar}.',
         question: 'Waar?',
         choices: [
@@ -174,12 +176,12 @@ describe('validateStory', () => {
         onFit: 'end',
         structure: 'oorzaak-gevolg',
       },
-      mis: { kind: 'passage', chapter: '', title: '', image: '', text: 'Mis.', next: 'end', sets: ['fout'] },
-      end: { kind: 'finale', chapter: '', title: '', image: '', text: '[[fout: Jammer.]]' },
+      mis: { kind: 'passage', chapter: '', title: '', illustration: 'forest', text: 'Mis.', next: 'end', sets: ['fout'] },
+      end: { kind: 'finale', chapter: '', title: '', illustration: 'forest', text: '[[fout: Jammer.]]' },
     },
     endings: [
-      { minScore: 0, title: '', image: '', text: '' },
-      { minScore: 1, title: '', image: '', text: '' },
+      { minScore: 0, title: '', illustration: 'forest', text: '' },
+      { minScore: 1, title: '', illustration: 'forest', text: '' },
     ],
   })
   const decision = (story: Story) => {
