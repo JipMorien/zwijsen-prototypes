@@ -1,21 +1,66 @@
-import { ChevronRight, Clock, Gem, Lock, BookOpen } from 'lucide-react'
+import { BookOpen, ChevronRight, Clock, Gem, Lock, Pencil } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
 import { loadAllProgress } from '../engine/progress'
+import { MAX_NAME_LENGTH } from '../engine/settings'
 import type { Story } from '../types/story'
 import { Scene } from '../ui/illustrations'
 
 type HomePageProps = {
   stories: Story[]
+  name: string
+  onNameChange: (name: string) => void
   onSelectStory: (id: string) => void
 }
 
-function HomePage({ stories, onSelectStory }: HomePageProps) {
+/** Asks the child's name once, so the characters in the story can talk to them. */
+function NameForm({ name, onNameChange }: { name: string; onNameChange: (name: string) => void }) {
+  const [editing, setEditing] = useState(!name)
+  const [draft, setDraft] = useState(name)
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault()
+    onNameChange(draft)
+    setEditing(false)
+  }
+
+  if (!editing) {
+    return (
+      <button type="button" className="name-change" onClick={() => setEditing(true)}>
+        <Pencil size={14} aria-hidden="true" />
+        Niet {name}? Verander je naam
+      </button>
+    )
+  }
+
+  return (
+    <form className="name-form" onSubmit={submit}>
+      <label htmlFor="reader-name">Hoe heet jij? Dan praten de personages in het verhaal met jou.</label>
+      <div>
+        <input
+          id="reader-name"
+          value={draft}
+          maxLength={MAX_NAME_LENGTH}
+          autoComplete="off"
+          placeholder="Jouw naam"
+          onChange={event => setDraft(event.target.value)}
+        />
+        <button type="submit" className="button-primary">
+          Bewaar
+        </button>
+      </div>
+    </form>
+  )
+}
+
+function HomePage({ stories, name, onNameChange, onSelectStory }: HomePageProps) {
   const progress = loadAllProgress()
 
   return (
     <main className="home-page">
       <section className="home-intro">
-        <h1>Kies een verhaal</h1>
+        <h1>{name ? `Hoi ${name}! Kies een verhaal` : 'Kies een verhaal'}</h1>
         <p>Jij bepaalt hoe het verhaal verdergaat. Lees goed, want in de tekst staat wat slim is.</p>
+        <NameForm name={name} onNameChange={onNameChange} />
       </section>
 
       <div className="story-grid">

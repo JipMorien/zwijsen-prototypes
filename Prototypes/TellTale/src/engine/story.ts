@@ -32,8 +32,14 @@ export function createPlaythrough(story: Story, random: Random = Math.random, pr
   return playthrough
 }
 
-export function storyVars(story: Story, playthrough: Playthrough): Record<string, string> {
-  const vars: Record<string, string> = {}
+/** What the reader is called in the story when they did not give their name. */
+export const READER_DEFAULT = 'speurder'
+
+/**
+ * The values for {key} markers: the reader's {naam} and the vars of the variants in this playthrough.
+ */
+export function storyVars(story: Story, playthrough: Playthrough, reader = READER_DEFAULT): Record<string, string> {
+  const vars: Record<string, string> = { naam: reader }
   for (const [id, node] of decisionEntries(story)) {
     Object.assign(vars, node.variants[playthrough[id] ?? 0].vars)
   }

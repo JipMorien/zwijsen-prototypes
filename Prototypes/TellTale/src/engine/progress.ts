@@ -5,6 +5,8 @@ export type StoryProgress = {
   total: number
   timesRead: number
   secretEndingFound: boolean
+  /** How many parts the child read again during the last read. For a teacher view later. */
+  lastRereads?: number
   /** Variants of the last read, so the next read can use different ones. */
   lastVariants?: Record<string, number>
 }
@@ -37,7 +39,7 @@ export function loadProgress(storyId: string, storage = browserStorage()): Story
 /** Records a finished read and returns the updated progress. Fails quietly when storage is unavailable. */
 export function recordRead(
   storyId: string,
-  result: { score: number; total: number; secretEnding: boolean; variants?: Record<string, number> },
+  result: { score: number; total: number; secretEnding: boolean; variants?: Record<string, number>; rereads?: number },
   storage = browserStorage(),
 ): StoryProgress {
   const all = loadAllProgress(storage)
@@ -49,6 +51,7 @@ export function recordRead(
     timesRead: (previous?.timesRead ?? 0) + 1,
     secretEndingFound: (previous?.secretEndingFound ?? false) || result.secretEnding,
     lastVariants: result.variants,
+    ...(result.rereads !== undefined && { lastRereads: result.rereads }),
   }
   try {
     storage?.setItem(KEY, JSON.stringify({ ...all, [storyId]: updated }))

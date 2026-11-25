@@ -48,13 +48,17 @@ export function activeTraces(story: Story, flags: Set<string>): (Trace & { flag:
 
 /**
  * How late it is, from 0 (morning) to 1 (dark). Time passes with every decision, and a choice
- * that did not fit the text costs extra time. A perfect read ends in the afternoon.
+ * that did not fit the text costs extra time, and so does reading a part again. A perfect read
+ * ends in the afternoon.
  */
-export function duskLevel(decisions: Decision[], total: number): number {
+export function duskLevel(decisions: Decision[], total: number, rereads = 0): number {
   if (total === 0) return 0
   const misses = decisions.filter(decision => !decision.fitsText).length
-  return Math.min(1, (decisions.length / total) * 0.35 + (misses / total) * 0.65)
+  return Math.min(1, (decisions.length / total) * 0.35 + (misses / total) * 0.65 + rereads * REREAD_COST)
 }
+
+/** Reading a part again is allowed, but it takes a little time: a small mark, not a penalty. */
+export const REREAD_COST = 0.05
 
 export function timeOfDay(dusk: number): string {
   if (dusk < 0.3) return 'Ochtend'

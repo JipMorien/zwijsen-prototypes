@@ -1162,3 +1162,186 @@
     padding: 22px 20px 28px;
   }
 }
+
+/* Reading again: allowed, with a small mark */
+.reread-button {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  width: fit-content;
+  margin-top: 14px;
+  padding: 8px 14px;
+  border: 2px solid var(--blue-soft);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  color: var(--blue-dark);
+  font-weight: 500;
+}
+
+.reread-button:hover {
+  border-color: var(--blue);
+}
+
+.reread-button span {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.reread-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 16px 48px 0;
+  padding: 8px 14px;
+  border-radius: var(--radius-small);
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+  font-size: 15px;
+}
+
+.reread-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.journey-reread {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--sand);
+  color: var(--muted);
+  font-size: 13px;
+  vertical-align: 1px;
+}
+
+/* Text revealed paragraph by paragraph */
+.story-text .paragraph {
+  animation: paragraph-in 400ms ease;
+}
+
+@keyframes paragraph-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.reveal-more {
+  display: flex;
+  justify-content: center;
+  padding: 0 48px 28px;
+}
+
+.reveal-more button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+  font-weight: 500;
+}
+
+.reveal-more button:hover {
+  background: #d3eaf6;
+}
+
+/* Sound toggle in the top bar */
+.sound-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--blue-soft);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  color: var(--muted);
+}
+
+.sound-button.is-on {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+/* Name on the homepage */
+.name-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.name-form label {
+  color: var(--ink-soft);
+}
+
+.name-form div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.name-form input {
+  flex: 1;
+  min-width: 160px;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-small);
+  color: var(--ink);
+  font: inherit;
+  font-size: 18px;
+}
+
+.name-form input:focus {
+  border-color: var(--blue);
+  outline: none;
+}
+
+.name-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--blue-dark);
+  font-size: 15px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .reread-hint {
+    margin: 12px 20px 0;
+  }
+
+  .reveal-more {
+    padding: 0 20px 20px;
+  }
+}
+
+@media (max-width: 760px) {
+  /* The wordmark is hidden here, so the sound button moves to the right itself */
+  .sound-button {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+}

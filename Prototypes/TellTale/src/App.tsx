@@ -1,14 +1,25 @@
-import { House } from 'lucide-react'
+import { House, Volume2, VolumeX } from 'lucide-react'
 import { useState } from 'react'
 import './App.css'
+import { READER_DEFAULT } from './engine/story'
+import { loadName, loadSound, saveName, saveSound } from './engine/settings'
 import HomePage from './features/Homepage'
 import ReadingPage from './features/ReadingPage'
 import { getStoryById, stories } from './prototype-data/stories'
 
 function App() {
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null)
+  const [name, setName] = useState(() => loadName())
+  const [sound, setSound] = useState(() => loadSound())
   const selectedStory = selectedStoryId ? getStoryById(selectedStoryId) : undefined
   const goHome = () => setSelectedStoryId(null)
+
+  const toggleSound = () => {
+    setSound(on => {
+      saveSound(!on)
+      return !on
+    })
+  }
 
   return (
     <div className="app">
@@ -33,12 +44,29 @@ function App() {
         <span className="wordmark" aria-hidden="true">
           tell<span>tale</span>
         </span>
+        {selectedStory && (
+          <button
+            className={`sound-button ${sound ? 'is-on' : ''}`}
+            onClick={toggleSound}
+            aria-pressed={sound}
+            aria-label={sound ? 'Geluid uitzetten' : 'Geluid aanzetten'}
+            title={sound ? 'Geluid uitzetten' : 'Geluid aanzetten'}
+          >
+            {sound ? <Volume2 size={22} /> : <VolumeX size={22} />}
+          </button>
+        )}
       </header>
 
       {selectedStory ? (
-        <ReadingPage key={selectedStory.id} story={selectedStory} onBack={goHome} />
+        <ReadingPage
+          key={selectedStory.id}
+          story={selectedStory}
+          reader={name || READER_DEFAULT}
+          sound={sound}
+          onBack={goHome}
+        />
       ) : (
-        <HomePage stories={stories} onSelectStory={setSelectedStoryId} />
+        <HomePage stories={stories} name={name} onNameChange={value => setName(saveName(value))} onSelectStory={setSelectedStoryId} />
       )}
     </div>
   )

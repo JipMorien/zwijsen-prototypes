@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  ChevronDown,
   ChevronRight,
   Droplet,
   Highlighter,
@@ -44,11 +45,16 @@ import {
 } from '../engine/story'
 import { splitWords } from '../engine/puzzle'
 import type { Illustration, Story, WordHelp } from '../types/story'
+import { ambience, soundscapeFor } from '../ui/ambience'
 import { IllustrationIcon, Scene } from '../ui/illustrations'
 import PuzzleView from './PuzzleView'
 
 type ReadingPageProps = {
   story: Story
+  /** The name the child gave, used for {naam} in the story. */
+  reader: string
+  /** Background sound per scene, off unless the child turned it on. */
+  sound: boolean
   onBack: () => void
 }
 
@@ -65,6 +71,10 @@ type WordHelpProps = {
   onOpen: (word: OpenWord | null) => void
 }
 
+function paragraphsOf(text: string): string[] {
+  return text.split(/\n{2,}/)
+}
+
 /** The difficult word the child tapped, and in which paragraph, so the explanation shows there. */
 type OpenWord = { help: WordHelp; text: string; paragraph: number }
 
@@ -72,10 +82,21 @@ type OpenWord = { help: WordHelp; text: string; paragraph: number }
  * Story text. With marking, it is split into sentences the child can mark with the highlighter,
  * and difficult words get a dotted line and can be tapped for an explanation.
  */
-function Paragraphs({ text, marking, wordHelp }: { text: string; marking?: Marking; wordHelp?: WordHelpProps }) {
+function Paragraphs({
+  text,
+  marking,
+  wordHelp,
+  revealed = Infinity,
+}: {
+  text: string
+  marking?: Marking
+  wordHelp?: WordHelpProps
+  /** How many paragraphs are shown so far; the text is revealed paragraph by paragraph. */
+  revealed?: number
+}) {
   return (
     <div className={`story-text ${marking?.highlighter ? 'is-highlighting' : ''}`}>
-      {text.split(/\n{2,}/).map((paragraph, index) => (
+      {paragraphsOf(text).slice(0, revealed).map((paragraph, index) => (
         <div key={index} className="paragraph">
           <p>
             {marking
@@ -202,7 +223,7 @@ function Notebook({ marks }: { marks: Mark[] }) {
 }
 
 /** What the child carries along: the time of day and the traces earlier choices left behind. */
-function OnTheWay({ story, flags, dusk }: { story: Story; flags: Set<string>; dusk: number }) {
+function OnTheWay({ story, flags, dusk, rereads }: { story: Story; flags: Set<string>; dusk: number; rereads: number }) {
   const traces = activeTraces(story, flags)
   const SkyIcon = dusk < 0.55 ? Sun : dusk < 0.8 ? Sunset : Moon
   return (
@@ -225,6 +246,12 @@ function OnTheWay({ story, flags, dusk }: { story: Story; flags: Set<string>; du
             </li>
           ))}
         </ul>
+      )}
+      {rereads > 0 && (
+        <p className="reread-count">
+          <RotateCcw size={16} aria-hidden="true" />
+          {rereads === 1 ? '1 keer teruggelezen' : `${rereads} keer teruggelezen`}
+        </p>
       )}
     </section>
   )
@@ -250,7 +277,7 @@ function ChapterCard({ label, illustration, story }: { label: string; illustrati
   )
 }
 
-function ReadingPage({ story, onBack }: ReadingPageProps) {
+function ReadingPage({ story, reader, sound, onBack }: ReadingPageProps) {
   const [playthrough, setPlaythrough] = useState<Playthrough>(() =>
     createPlaythrough(story, Math.random, loadProgress(story.id)?.lastVariants),
   )
@@ -266,28 +293,40 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
   const [showEnding, setShowEnding] = useState(false)
   /** At a decision, the question only appears after reading, and then the text is gone. */
   const [questionOpen, setQuestionOpen] = useState(false)
+  /** The decisions the child read again, once per re-read. A small mark on the journey, not a penalty. */
+  const [rereads, setRereads] = useState<string[]>([])
+  const [revealed, setRevealed] = useState(1)
   const [previousRead, setPreviousRead] = useState<StoryProgress | undefined>(() => loadProgress(story.id))
   const recorded = useRef(false)
 
   const currentNode = story.nodes[currentNodeId]
   const total = decisionCount(story)
-  const vars = storyVars(story, playthrough)
+  const vars = storyVars(story, playthrough, reader)
   const flags = collectFlags(story, visited)
   const render = (text: string) => renderText(text, vars, flags)
   const points = score(decisions)
   const ending = showEnding ? pickEnding(story, decisions) : null
   const hasSecret = ending ? ending.minScore === bestScore(story) : false
-  const dusk = story.dusk ? duskLevel(decisions, total) : 0
+  const dusk = story.dusk ? duskLevel(decisions, total, rereads.length) : 0
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [currentNodeId, showEnding, questionOpen])
 
+  // The scene's soundscape follows the story: forest, water, wind, and crickets when it gets dark.
+  const scene = ending?.illustration ?? currentNode?.illustration
+  const soundscape = scene ? soundscapeFor(scene, dusk) : 'stil'
+  useEffect(() => {
+    if (sound) ambience.play(soundscape)
+    else ambience.stop()
+  }, [sound, soundscape])
+  useEffect(() => () => ambience.stop(), [])
+
   useEffect(() => {
     if (!ending || recorded.current) return
     recorded.current = true
-    recordRead(story.id, { score: points, total, secretEnding: hasSecret, variants: playthrough })
-  }, [ending, points, total, story, playthrough, hasSecret])
+    recordRead(story.id, { score: points, total, secretEnding: hasSecret, variants: playthrough, rereads: rereads.length })
+  }, [ending, points, total, story, playthrough, hasSecret, rereads])
 
   const goTo = (nodeId: string | undefined) => {
     if (!nodeId || !story.nodes[nodeId]) return
@@ -297,6 +336,23 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
     setInkOut(false)
     setOpenWord(null)
     setPuzzleSolved(false)
+    setRevealed(1)
+  }
+
+  /** Shows the next paragraph and scrolls it into view. */
+  const revealMore = () => {
+    setRevealed(count => count + 1)
+    window.setTimeout(() => {
+      document.querySelector('.story-text .paragraph:last-child')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }, 50)
+  }
+
+  /** The text comes back, all at once, and it gets a little later in the story. */
+  const reread = () => {
+    setRereads(previous => [...previous, currentNodeId])
+    setQuestionOpen(false)
+    setRevealed(Infinity)
+    setOpenWord(null)
   }
 
   const choose = (choiceIndex: number) => {
@@ -331,10 +387,15 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
     setInkOut(false)
     setOpenWord(null)
     setPuzzleSolved(false)
+    setRereads([])
+    setRevealed(1)
     recorded.current = false
   }
 
   const ink = inkLeft(marks, currentNodeId)
+  const paragraphCount = currentNode ? paragraphsOf(render(currentNode.text)).length : 0
+  const allRevealed = revealed >= paragraphCount
+  const rereadingNow = !questionOpen && rereads.includes(currentNodeId)
   const pageClass = `reading-page ${story.dusk ? 'has-sky' : ''}`
   const pageStyle = { '--dusk': dusk } as CSSProperties
 
@@ -359,7 +420,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
         <div className="reading-layout">
           <aside className="reading-side">
             <ChapterCard label="Einde" illustration={ending.illustration} story={story} />
-            <OnTheWay story={story} flags={flags} dusk={dusk} />
+            <OnTheWay story={story} flags={flags} dusk={dusk} rereads={rereads.length} />
           </aside>
 
           <div className="reading-main">
@@ -402,6 +463,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                   const marked = clueMarked(variant.clue, marks, decision.nodeId)
                   // The title of what happened next; if the story went straight on, the chapter's own title
                   const after = story.nodes[visited[visited.indexOf(decision.nodeId) + 1]]
+                  const timesReread = rereads.filter(id => id === decision.nodeId).length
                   return (
                     <li key={decision.nodeId} className={decision.fitsText ? 'is-good' : ''}>
                       <span className="journey-stop" aria-hidden="true">
@@ -410,7 +472,15 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                       <div>
                         <span className="journey-chapter">{node.chapter}</span>
                         <strong>{render(after && (after.kind === 'passage' || after.kind === 'finale') ? after.title : node.title)}</strong>
-                        <p className="journey-choice">Je koos: {node.choices[decision.choiceIndex].text.toLowerCase()}</p>
+                        <p className="journey-choice">
+                          Je koos: {node.choices[decision.choiceIndex].text.toLowerCase()}
+                          {timesReread > 0 && (
+                            <span className="journey-reread" title="Je las dit stuk nog eens">
+                              <RotateCcw size={13} aria-hidden="true" />
+                              teruggelezen{timesReread > 1 && ` (${timesReread}×)`}
+                            </span>
+                          )}
+                        </p>
                         {decision.fitsText && (
                           <p className="journey-good">
                             Goed gelezen!{marked && ' Je had de aanwijzing ook gemarkeerd.'}
@@ -466,7 +536,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
               ))}
             </span>
           </button>
-          <OnTheWay story={story} flags={flags} dusk={dusk} />
+          <OnTheWay story={story} flags={flags} dusk={dusk} rereads={rereads.length} />
         </aside>
 
         <div className="reading-main">
@@ -477,7 +547,13 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
             </div>
             {!questionOpen && (
               <>
-                {currentNodeId === story.startNode && marks.length === 0 && (
+                {rereadingNow && (
+                  <p className="reread-hint">
+                    <RotateCcw size={18} aria-hidden="true" />
+                    Je leest dit stuk nog eens. Dat mag, maar het kost wat tijd: kijk maar naar de lucht.
+                  </p>
+                )}
+                {currentNodeId === story.startNode && marks.length === 0 && !rereadingNow && (
                   <p className="highlight-hint">
                     <Highlighter size={18} aria-hidden="true" />
                     Let op: als je klaar bent met lezen, verdwijnt de tekst. Je markeerstift heeft {INK_PER_PAGE} strepen
@@ -495,11 +571,20 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                   text={render(currentNode.text)}
                   marking={{ nodeId: currentNodeId, marks, highlighter, onToggle: toggleMark }}
                   wordHelp={{ words: story.words, open: openWord, onOpen: setOpenWord }}
+                  revealed={revealed}
                 />
+                {!allRevealed && (
+                  <div className="reveal-more">
+                    <button type="button" onClick={revealMore}>
+                      Verder lezen
+                      <ChevronDown size={18} aria-hidden="true" />
+                    </button>
+                  </div>
+                )}
               </>
             )}
 
-            {currentNode.kind === 'decision' && !questionOpen && (
+            {currentNode.kind === 'decision' && !questionOpen && allRevealed && (
               <div className="paper-footer">
                 <button className="button-primary" onClick={() => setQuestionOpen(true)}>
                   Klaar met lezen
@@ -516,6 +601,11 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
                   De tekst is weg. Wat weet je nog? In je speurdersboekje staan de zinnen die jij hebt gemarkeerd.
                 </p>
                 <Notebook marks={marks} />
+                <button type="button" className="reread-button" onClick={reread}>
+                  <BookOpen size={18} aria-hidden="true" />
+                  Lees het nog eens
+                  <span>Dan wordt het wel wat later.</span>
+                </button>
                 <ul className="choice-list">
                   {currentNode.choices.map((choice, index) => (
                     <li key={`${currentNodeId}-${index}`}>
@@ -529,7 +619,7 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
               </section>
             )}
 
-            {currentNode.kind === 'puzzle' && (
+            {currentNode.kind === 'puzzle' && allRevealed && (
               <PuzzleView
                 key={currentNodeId}
                 puzzle={currentNode.puzzle}
@@ -538,7 +628,8 @@ function ReadingPage({ story, onBack }: ReadingPageProps) {
               />
             )}
 
-            {(currentNode.kind === 'passage' || currentNode.kind === 'finale' || (currentNode.kind === 'puzzle' && puzzleSolved)) && (
+            {allRevealed &&
+              (currentNode.kind === 'passage' || currentNode.kind === 'finale' || (currentNode.kind === 'puzzle' && puzzleSolved)) && (
               <div className="paper-footer">
                 <button
                   className="button-primary"

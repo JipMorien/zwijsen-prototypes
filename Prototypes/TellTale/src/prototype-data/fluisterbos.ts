@@ -28,7 +28,7 @@ export const fluisterbos: Story = {
       chapter: 'Hoofdstuk 1',
       title: 'Waar is Pluis?',
       illustration: 'forest',
-      text: `Op een zonnige ochtend loopt Mila het Fluisterbos in. Haar witte kat Pluis is sinds gisteravond verdwenen.
+      text: `Op een zonnige ochtend loopt Mila het Fluisterbos in. Haar witte kat Pluis is sinds gisteravond verdwenen. "Help jij me zoeken, {naam}?" vraagt ze aan jou.
 
 Mama zei vanochtend nog: "{moeder}"
 
@@ -155,7 +155,7 @@ Het gras is op één plek helemaal platgedrukt. Ernaast staat een bakje water va
       chapter: 'Hoofdstuk 2',
       title: 'De wijze uil',
       illustration: 'owl',
-      text: `De pootafdrukken houden op bij een omgevallen boom. Op de stam zit een uil. "Zoek je een witte kat?" vraagt hij. "Ik zag hem vannacht. Luister goed, dan vertel ik je de weg."
+      text: `De pootafdrukken houden op bij een omgevallen boom. Op de stam zit een uil. "Zoek je een witte kat?" vraagt hij. "Ik zag hem vannacht. Luister goed, dan vertel ik je de weg. Jij ook, {naam}."
 
 "{route}"
 
@@ -397,7 +397,7 @@ Mila denkt nog eens na over wat de vos zei. Dan weet ze het: ze gaat {oplossing}
       chapter: 'Hoofdstuk 4',
       title: 'Een nieuwe vriend',
       illustration: 'fox',
-      text: `Het lukt! De vos springt overeind en zwaait met zijn staart. "Dank je wel!" roept hij blij. "Kom, ik weet waar je kat is."`,
+      text: `Het lukt! De vos springt overeind en zwaait met zijn staart. "Dank jullie wel, Mila en {naam}!" roept hij blij. "Kom, ik weet waar je kat is."`,
       next: 'vertellen',
       sets: ['vriend'],
     },
@@ -514,7 +514,7 @@ Dan denkt Mila aan wat de vos zei. Ze gaat {oplossingPluis}. Het duurt heel lang
       illustration: 'cat',
       text: `Het werkt! Voorzichtig komt Pluis naar beneden. Dan springt hij zo in Mila's armen.
 
-Mila knuffelt hem stevig. "Ik heb je gevonden," fluistert ze.`,
+Mila knuffelt hem stevig. "Ik heb je gevonden," fluistert ze. Dan kijkt ze naar jou. "Dank je wel, {naam}. Zonder jou was het nooit gelukt."`,
     },
   },
 
