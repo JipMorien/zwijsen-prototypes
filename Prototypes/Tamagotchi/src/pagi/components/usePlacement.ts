@@ -16,12 +16,15 @@ function findPlacement(): Placement | null {
   const perch = document.querySelector(PERCH_SELECTOR);
   if (!perch) return null;
   const rect = perch.getBoundingClientRect();
+  const top = rect.top - SITTING_HEIGHT + FEET_OVERLAP;
+  // Once the top edge scrolls away he would float over the text, so he docks.
+  if (top < VIEWPORT_MARGIN || top > window.innerHeight) return null;
   return {
     left: Math.max(
       VIEWPORT_MARGIN,
       rect.right - SITTING_WIDTH - INSET_FROM_PERCH_RIGHT,
     ),
-    top: Math.max(VIEWPORT_MARGIN, rect.top - SITTING_HEIGHT + FEET_OVERLAP),
+    top,
   };
 }
 

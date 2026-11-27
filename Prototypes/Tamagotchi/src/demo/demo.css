@@ -1,0 +1,193 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f4f6fb;
+  color: #1d2433;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+h1,
+h2 {
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+.app-header {
+  padding: 16px 20px;
+  background: #2f6fde;
+  color: #ffffff;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+/* Bottom padding keeps content clear of Pagi docked in the corner. */
+.app-main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 180px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card,
+.reader,
+.search,
+.toets {
+  padding: 20px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: #5b6478;
+  font-size: 14px;
+}
+
+.primary {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #2f6fde;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Room above the text for Pagi to sit on its top edge. */
+.reading-text {
+  margin: 100px 0 20px;
+  padding: 16px;
+  border: 2px solid #d5dbe8;
+  border-radius: 10px;
+  font-size: 19px;
+}
+
+.reading-text p {
+  margin: 0 0 12px;
+}
+
+.search-question {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.search-help {
+  display: block;
+  color: #5b6478;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.search .reading-text {
+  margin-top: 110px;
+}
+
+.sentence {
+  display: inline;
+  margin: 0 2px 0 0;
+  padding: 1px 2px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  text-align: left;
+}
+
+.sentence:hover {
+  background: #e8eefb;
+}
+
+.sentence.found {
+  background: #c9efd6;
+}
+
+.sentence.missed {
+  background: #ffdcb8;
+}
+
+.search-done p {
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.toets fieldset {
+  margin: 0 0 16px;
+  border: 1px solid #d5dbe8;
+  border-radius: 8px;
+}
+
+.toets label {
+  display: block;
+  padding: 4px 0;
+}
+
+.toets input {
+  margin-right: 8px;
+}
+
+.devbar {
+  max-width: 720px;
+  margin: 0 auto 24px;
+  padding: 12px 16px;
+  border: 2px dashed #8a93a6;
+  border-radius: 10px;
+  background: #2b2f3a;
+  color: #e6e9f0;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 13px;
+}
+
+.devbar-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.devbar-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.devbar-actions button {
+  padding: 6px 10px;
+  border: 1px solid #8a93a6;
+  border-radius: 6px;
+  background: #3a3f4d;
+  color: #ffffff;
+}
+
+.devbar-log {
+  margin: 0;
+  padding-left: 20px;
+  overflow-wrap: anywhere;
+}
