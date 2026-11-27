@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
+import { PERCH_INSET, PERCH_OVERLAP, SITTING_SIZE } from "../config";
 
 const PERCH_SELECTOR = '[data-pagi-perch="reading"]';
-const SITTING_WIDTH = 84;
-const SITTING_HEIGHT = 111;
-const INSET_FROM_PERCH_RIGHT = 16;
-const FEET_OVERLAP = 12;
-const VIEWPORT_MARGIN = 8;
 
 export interface Placement {
   left: number;
@@ -16,18 +12,20 @@ function findPlacement(): Placement | null {
   const perch = document.querySelector(PERCH_SELECTOR);
   if (!perch) return null;
   const rect = perch.getBoundingClientRect();
-  const top = rect.top - SITTING_HEIGHT + FEET_OVERLAP;
-  if (top < VIEWPORT_MARGIN || top > window.innerHeight) return null;
-  return {
-    left: Math.max(
-      VIEWPORT_MARGIN,
-      rect.right - SITTING_WIDTH - INSET_FROM_PERCH_RIGHT,
-    ),
-    top,
-  };
+  const top = rect.top - SITTING_SIZE.height + PERCH_OVERLAP;
+  const left = rect.right - PERCH_INSET - SITTING_SIZE.width;
+  const onScreen =
+    top >= 0 &&
+    top + SITTING_SIZE.height <= window.innerHeight &&
+    left >= 0 &&
+    left + SITTING_SIZE.width <= window.innerWidth;
+  return onScreen ? { left, top } : null;
 }
 
-export function usePlacement(wantsToSit: boolean): Placement | null {
+export function usePlacement(
+  wantsToSit: boolean,
+  layoutVersion: number,
+): Placement | null {
   const [placement, setPlacement] = useState<Placement | null>(null);
 
   useEffect(() => {
@@ -37,8 +35,6 @@ export function usePlacement(wantsToSit: boolean): Placement | null {
       window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(() => setPlacement(findPlacement()));
     };
-    const layoutObserver = new ResizeObserver(scheduleUpdate);
-    layoutObserver.observe(document.body);
     window.addEventListener("scroll", scheduleUpdate, {
       capture: true,
       passive: true,
@@ -47,11 +43,10 @@ export function usePlacement(wantsToSit: boolean): Placement | null {
     scheduleUpdate();
     return () => {
       window.cancelAnimationFrame(frame);
-      layoutObserver.disconnect();
       window.removeEventListener("scroll", scheduleUpdate, { capture: true });
       window.removeEventListener("resize", scheduleUpdate);
     };
-  }, [wantsToSit]);
+  }, [wantsToSit, layoutVersion]);
 
   return wantsToSit ? placement : null;
 }

@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { NEED_MAX } from "../config";
 import { copy } from "../copy";
 import type { Needs, PagiState } from "../types";
@@ -9,62 +10,69 @@ interface PanelProps {
   onClose: () => void;
 }
 
+const NEED_LABELS: Record<keyof Needs, string> = {
+  food: copy.panel.honger,
+  energy: copy.panel.energie,
+  joy: copy.panel.blij,
+};
+
 const NEED_ORDER: (keyof Needs)[] = ["food", "energy", "joy"];
 
-function NeedBar({ label, value }: { label: string; value: number }) {
+function NeedBar({ need, value }: { need: keyof Needs; value: number }) {
+  const percentage = Math.round((value / NEED_MAX) * 100);
   return (
-    <div className="pagi-need">
-      <span className="pagi-need-label">{label}</span>
-      <div
-        className="pagi-meter"
-        role="meter"
-        aria-label={label}
-        aria-valuemin={0}
-        aria-valuemax={NEED_MAX}
-        aria-valuenow={value}
-      >
-        <div
-          className="pagi-meter-fill"
-          style={{ width: `${(value / NEED_MAX) * 100}%` }}
-        />
+    <div className="pagi-need" data-need={need}>
+      <div className="pagi-need-label">
+        <span>{NEED_LABELS[need]}</span>
+        <span>{percentage}%</span>
       </div>
+      <progress
+        className="pagi-bar"
+        aria-label={NEED_LABELS[need]}
+        value={value}
+        max={NEED_MAX}
+      />
     </div>
   );
 }
 
 export function Panel({ state, onFeed, onPet, onClose }: PanelProps) {
   return (
-    <section className="pagi-panel" aria-label={copy.name}>
+    <section className="pagi-panel" aria-label={copy.panel.title}>
       <header className="pagi-panel-header">
-        <h2 className="pagi-name">{copy.name}</h2>
-        <button type="button" className="pagi-close" onClick={onClose}>
-          {copy.close}
+        <h2 className="pagi-name">{copy.panel.title}</h2>
+        <button
+          type="button"
+          className="pagi-close"
+          aria-label={copy.panel.close}
+          onClick={onClose}
+        >
+          <X aria-hidden="true" />
         </button>
       </header>
-      <dl className="pagi-stats">
-        <div className="pagi-stat">
-          <dt>{copy.wordBites}</dt>
-          <dd>{state.wordBites}</dd>
-        </div>
-        <div className="pagi-stat">
-          <dt>{copy.stars}</dt>
-          <dd>{state.stars}</dd>
-        </div>
-      </dl>
-      {state.sleeping && <p className="pagi-note">{copy.asleep}</p>}
+      <div className="pagi-stats">
+        <p className="pagi-chip" data-kind="brokjes">
+          {copy.panel.brokjes(state.wordBites)}
+        </p>
+        <p className="pagi-chip" data-kind="sterren">
+          {copy.panel.sterren(state.stars)}
+        </p>
+      </div>
+      {state.sleeping && <p className="pagi-note">{copy.panel.sleepNote}</p>}
       {NEED_ORDER.map((need) => (
-        <NeedBar
-          key={need}
-          label={copy.needs[need]}
-          value={state.needs[need]}
-        />
+        <NeedBar key={need} need={need} value={state.needs[need]} />
       ))}
       <div className="pagi-actions">
-        <button type="button" className="pagi-action" onClick={onFeed}>
-          {copy.feed}
+        <button
+          type="button"
+          className="pagi-action"
+          data-primary="true"
+          onClick={onFeed}
+        >
+          {copy.panel.feed}
         </button>
         <button type="button" className="pagi-action" onClick={onPet}>
-          {copy.pet}
+          {copy.panel.pet}
         </button>
       </div>
     </section>

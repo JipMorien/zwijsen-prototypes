@@ -21,7 +21,11 @@ export function Bubble({ message, messageId }: BubbleProps) {
 
   return (
     <div className="pagi-bubble" aria-live="polite">
-      {visible && <p className="pagi-bubble-text">{message}</p>}
+      {visible && (
+        <p key={messageId} className="pagi-bubble-text">
+          {message}
+        </p>
+      )}
     </div>
   );
 }

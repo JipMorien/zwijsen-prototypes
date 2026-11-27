@@ -16,6 +16,7 @@ interface Screen {
   sayId: number;
   animation?: Animation;
   animationId: number;
+  actionCount: number;
 }
 
 interface TimedAction {
@@ -31,18 +32,27 @@ function advance(screen: Screen, { action, now }: TimedAction): Screen {
     sayId: result.say ? screen.sayId + 1 : screen.sayId,
     animation: result.animation ?? screen.animation,
     animationId: result.animation ? screen.animationId + 1 : screen.animationId,
+    actionCount: screen.actionCount + 1,
   };
 }
 
 function openScreen(storage: PagiStorage): Screen {
-  return { state: restoreState(storage.load()), sayId: 0, animationId: 0 };
+  return {
+    state: restoreState(storage.load()),
+    sayId: 0,
+    animationId: 0,
+    actionCount: 0,
+  };
 }
 
 export function Pagi({ storage }: { storage: PagiStorage }) {
   const [screen, dispatch] = useReducer(advance, storage, openScreen);
   const { state } = screen;
   const avatarButton = useRef<HTMLButtonElement>(null);
-  const placement = usePlacement(state.view === "reading" && !state.panelOpen);
+  const placement = usePlacement(
+    state.view === "reading" && !state.panelOpen,
+    screen.actionCount,
+  );
 
   const send = useCallback(
     (action: PagiAction) => dispatch({ action, now: Date.now() }),
@@ -64,7 +74,8 @@ export function Pagi({ storage }: { storage: PagiStorage }) {
 
   return (
     <div
-      className={placement ? "pagi pagi--sitting" : "pagi pagi--docked"}
+      className="pagi"
+      data-placement={placement ? "sitting" : "docked"}
       style={placement ?? undefined}
       hidden={state.quiet}
       onKeyDown={handleKeyDown}
@@ -82,17 +93,16 @@ export function Pagi({ storage }: { storage: PagiStorage }) {
         ref={avatarButton}
         type="button"
         className="pagi-avatar"
-        aria-label={copy.avatarLabel}
+        aria-label={copy.panel.open}
         aria-expanded={state.panelOpen}
         onClick={() => send({ type: "panel_changed", open: !state.panelOpen })}
       >
-        <span className="pagi-bob">
-          <Avatar
-            key={screen.animationId}
-            mood={moodOf(state)}
-            lookingDown={placement !== null}
-            animation={screen.animation}
-          />
+        <span
+          key={screen.animationId}
+          className="pagi-jump"
+          data-animation={screen.animation}
+        >
+          <Avatar mood={moodOf(state)} lookingDown={placement !== null} />
         </span>
       </button>
     </div>
