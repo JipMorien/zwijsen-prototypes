@@ -1,13 +1,13 @@
 import {
   DAY_DECAY,
-  ENERGY_PER_PAGE,
-  FOOD_PER_FEEDING,
+  FEED_AMOUNT,
+  FOUND_JOY,
   HUNGRY_AT,
   INITIAL_STATE,
-  JOY_PER_EVIDENCE,
-  JOY_PER_PET,
   MIN_READ_MS,
   NEED_MAX,
+  PET_AMOUNT,
+  READ_ENERGY,
   SLEEP_AVG,
 } from "./config";
 import { copy } from "./copy";
@@ -30,7 +30,7 @@ export function moodOf(state: PagiState): Mood {
 function readPage(state: PagiState, now: number): PagiResult {
   const readLongEnough =
     state.pageOpenedAt !== null && now - state.pageOpenedAt >= MIN_READ_MS;
-  if (!readLongEnough) return { state, say: copy.readTooFast };
+  if (!readLongEnough) return { state, say: copy.tooFast };
 
   return {
     state: {
@@ -38,12 +38,12 @@ function readPage(state: PagiState, now: number): PagiResult {
       wordBites: state.wordBites + 1,
       needs: {
         ...state.needs,
-        energy: clampNeed(state.needs.energy + ENERGY_PER_PAGE),
+        energy: clampNeed(state.needs.energy + READ_ENERGY),
       },
       sleeping: false,
       pageOpenedAt: null,
     },
-    say: state.sleeping ? copy.wokeUp : copy.pageRead,
+    say: state.sleeping ? copy.woke : copy.pageRead,
   };
 }
 
@@ -53,30 +53,27 @@ function passSchoolDay(state: PagiState): PagiResult {
     energy: clampNeed(state.needs.energy - DAY_DECAY.energy),
     joy: clampNeed(state.needs.joy - DAY_DECAY.joy),
   };
-  const fallsAsleep = !state.sleeping && averageNeed(needsAfterDay) < SLEEP_AVG;
+  if (state.sleeping) {
+    return { state: { ...state, needs: needsAfterDay } };
+  }
+  const fallsAsleep = averageNeed(needsAfterDay) < SLEEP_AVG;
   return {
-    state: {
-      ...state,
-      needs: needsAfterDay,
-      sleeping: state.sleeping || fallsAsleep,
-    },
-    say: fallsAsleep ? copy.fellAsleep : undefined,
+    state: { ...state, needs: needsAfterDay, sleeping: fallsAsleep },
+    say: fallsAsleep ? copy.fellAsleep : copy.dayPassed,
   };
 }
 
 function feed(state: PagiState): PagiResult {
   if (state.sleeping) return { state, say: copy.asleep };
-  if (state.wordBites === 0) return { state, say: copy.noWordBites };
+  if (state.wordBites === 0) return { state, say: copy.noBrokjes };
+  const foodAfterFeeding = clampNeed(state.needs.food + FEED_AMOUNT);
   return {
     state: {
       ...state,
       wordBites: state.wordBites - 1,
-      needs: {
-        ...state.needs,
-        food: clampNeed(state.needs.food + FOOD_PER_FEEDING),
-      },
+      needs: { ...state.needs, food: foodAfterFeeding },
     },
-    say: copy.fed,
+    say: foodAfterFeeding === NEED_MAX ? copy.full : copy.fed,
   };
 }
 
@@ -85,9 +82,9 @@ function pet(state: PagiState): PagiResult {
   return {
     state: {
       ...state,
-      needs: { ...state.needs, joy: clampNeed(state.needs.joy + JOY_PER_PET) },
+      needs: { ...state.needs, joy: clampNeed(state.needs.joy + PET_AMOUNT) },
     },
-    say: copy.petted,
+    say: copy.pet,
   };
 }
 
@@ -104,7 +101,7 @@ export function reducer(
     case "page_read":
       return readPage(state, now);
     case "structure_question":
-      return { state, say: action.question };
+      return { state, say: copy.question(action.question) };
     case "evidence_found":
       return {
         state: {
@@ -112,20 +109,26 @@ export function reducer(
           stars: state.stars + 1,
           needs: {
             ...state.needs,
-            joy: clampNeed(state.needs.joy + JOY_PER_EVIDENCE),
+            joy: clampNeed(state.needs.joy + FOUND_JOY),
           },
         },
-        say: copy.evidenceFound(action.signal),
+        say: copy.found(action.signal),
         animation: "juich",
       };
     case "evidence_missed":
-      return { state, say: copy.evidenceMissed(action.signal) };
+      return { state, say: copy.missed(action.signal) };
     case "quiet":
-      return { state: { ...state, quiet: action.on } };
+      return {
+        state: { ...state, quiet: action.on },
+        say: action.on ? undefined : copy.quietOff,
+      };
     case "demo_day":
       return passSchoolDay(state);
     case "demo_reset":
-      return { state: { ...INITIAL_STATE, view: state.view } };
+      return {
+        state: { ...INITIAL_STATE, view: state.view, quiet: state.quiet },
+        say: copy.hello,
+      };
     case "feed":
       return feed(state);
     case "pet":
