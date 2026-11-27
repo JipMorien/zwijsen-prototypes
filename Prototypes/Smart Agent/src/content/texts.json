@@ -1,0 +1,92 @@
+[
+  {
+    "id": "fiets",
+    "title": "De verdwenen fiets",
+    "paragraphs": [
+      ["Noor zette haar rode fiets elke dag tegen de schuur.", "Op dinsdagmorgen was de fiets weg.", "Ze keek achter de schuur en in de garage, maar ze vond niets."],
+      ["Toen zag ze sporen in de modder.", "De sporen liepen naar het huis van de buren.", "Daar stond haar broer Tim de fiets te poetsen met een oude doek.", "Hij had de fiets geleend omdat zijn eigen band lek was."],
+      ["Noor moest lachen, want de fiets was nog nooit zo schoon geweest."]
+    ],
+    "questions": [
+      { "id": "fiets-1", "skill": "hoofdgedachte", "prompt": "Waar gaat dit verhaal vooral over?", "options": ["Tim leert een band plakken", "Noor zoekt haar fiets en ontdekt wie hem heeft", "De buren krijgen een nieuwe schuur"], "correctIndex": 1, "rating": 780, "evidenceSentence": 6 },
+      { "id": "fiets-2", "skill": "verbanden", "prompt": "Waarom had Tim de fiets van Noor geleend?", "options": ["Zijn eigen band was lek", "Hij wilde hem verkopen", "Noor had het hem gevraagd"], "correctIndex": 0, "rating": 750, "evidenceSentence": 7 },
+      { "id": "fiets-3", "skill": "woordenschat", "prompt": "Wat betekent 'geleend' in dit verhaal?", "options": ["Voor altijd gekocht", "Kapot gemaakt", "Even gebruikt en later teruggeven"], "correctIndex": 2, "rating": 820, "evidenceSentence": 7 },
+      { "id": "fiets-4", "skill": "afleiden", "prompt": "Hoe voelde Noor zich aan het einde van het verhaal?", "options": ["Ze was bang voor de buren", "Ze vond het eigenlijk wel grappig", "Ze was verdrietig om haar fiets"], "correctIndex": 1, "rating": 860, "evidenceSentence": 8 }
+    ]
+  },
+  {
+    "id": "vogels",
+    "title": "Waarom vogels trekken",
+    "paragraphs": [
+      ["In de herfst vertrekken veel vogels uit Nederland.", "Ze vliegen soms duizenden kilometers naar het zuiden.", "Dat heet de vogeltrek."],
+      ["Vogels trekken niet weg omdat ze het koud hebben.", "Hun veren houden hen namelijk goed warm.", "Het echte probleem is dat er in de winter weinig insecten zijn om te eten."],
+      ["Zwaluwen eten alleen insecten, dus zij moeten wel vertrekken.", "Mussen eten ook zaden en blijven daarom het hele jaar hier."]
+    ],
+    "questions": [
+      { "id": "vogels-1", "skill": "hoofdgedachte", "prompt": "Wat legt deze tekst vooral uit?", "options": ["Hoe je een zwaluw herkent", "Hoe veren een vogel warm houden", "Waarom sommige vogels in de winter wegtrekken"], "correctIndex": 2, "rating": 930, "evidenceSentence": 6 },
+      { "id": "vogels-2", "skill": "verbanden", "prompt": "Waarom blijven mussen in de winter in Nederland?", "options": ["Ze kunnen ook zaden eten", "Ze hebben dikkere veren dan zwaluwen", "Ze kunnen niet ver vliegen"], "correctIndex": 0, "rating": 900, "evidenceSentence": 8 },
+      { "id": "vogels-3", "skill": "woordenschat", "prompt": "Wat betekent 'vertrekken' in de eerste zin?", "options": ["Ergens aan trekken", "Weggaan naar een andere plek", "Een nest bouwen"], "correctIndex": 1, "rating": 880, "evidenceSentence": 1 },
+      { "id": "vogels-4", "skill": "afleiden", "prompt": "Een vogel eet alleen bessen die de hele winter aan de struiken blijven hangen. Wat doet die vogel waarschijnlijk?", "options": ["Hij vertrekt, omdat het te koud wordt", "Hij stopt in de winter met eten", "Hij blijft, omdat er genoeg eten is"], "correctIndex": 2, "rating": 1040, "evidenceSentence": 6 }
+    ]
+  },
+  {
+    "id": "bus",
+    "title": "De bibliotheek op wielen",
+    "paragraphs": [
+      ["In het dorp Westerbroek is de bibliotheek al jaren gesloten.", "Toch kunnen de kinderen er elke week nieuwe boeken lenen.", "Op woensdag rijdt er namelijk een oude bus het plein op.", "Binnen staan geen stoelen meer, maar lange planken vol boeken."],
+      ["Mevrouw Aydin bestuurt de bus en weet precies wie wat leuk vindt.", "Ze bewaart vaak een spannend boek voor kinderen die zeggen dat lezen saai is.", "Meestal komen die kinderen de week erna terug met de vraag of er een tweede deel is."],
+      ["Sinds de bus rijdt, lenen de kinderen in Westerbroek meer boeken dan toen de bibliotheek nog open was."]
+    ],
+    "questions": [
+      { "id": "bus-1", "skill": "hoofdgedachte", "prompt": "Wat is de hoofdgedachte van deze tekst?", "options": ["Een bus zorgt ervoor dat kinderen in een dorp toch veel lezen", "Oude bussen zijn goedkoper dan nieuwe gebouwen", "Spannende boeken hebben altijd een tweede deel"], "correctIndex": 0, "rating": 1020, "evidenceSentence": 8 },
+      { "id": "bus-2", "skill": "verbanden", "prompt": "Waarom komt de boekenbus naar Westerbroek?", "options": ["Omdat de kinderen geen school hebben op woensdag", "Omdat de bibliotheek in het dorp dicht is", "Omdat mevrouw Aydin in het dorp woont"], "correctIndex": 1, "rating": 980, "evidenceSentence": 1 },
+      { "id": "bus-3", "skill": "woordenschat", "prompt": "Wat betekent 'bestuurt' in zin 5?", "options": ["Ze verkoopt de bus", "Ze maakt de bus schoon", "Ze rijdt in de bus en stuurt hem"], "correctIndex": 2, "rating": 960, "evidenceSentence": 5 },
+      { "id": "bus-4", "skill": "afleiden", "prompt": "Wat kun je afleiden over mevrouw Aydin?", "options": ["Ze vindt dat kinderen te weinig op school zijn", "Ze wil graag een andere baan", "Ze kent de kinderen goed en wil dat ze lezen leuk vinden"], "correctIndex": 2, "rating": 1100, "evidenceSentence": 6 }
+    ]
+  },
+  {
+    "id": "plastic",
+    "title": "Plastic in de zee",
+    "paragraphs": [
+      ["Elk jaar belandt er enorm veel plastic in de zee.", "Een groot deel daarvan komt via rivieren uit steden ver van de kust.", "Plastic verdwijnt niet, maar valt langzaam uiteen in steeds kleinere stukjes."],
+      ["Die stukjes heten microplastics.", "Vissen zien ze aan voor eten en krijgen zo plastic in hun maag.", "Omdat mensen vis eten, kunnen de deeltjes uiteindelijk ook bij ons terechtkomen."],
+      ["Opruimen helpt, maar het is lastig omdat de kleinste deeltjes bijna onzichtbaar zijn.", "Daarom zeggen onderzoekers dat we vooral moeten voorkomen dat plastic in het water komt."]
+    ],
+    "questions": [
+      { "id": "plastic-1", "skill": "hoofdgedachte", "prompt": "Wat is de belangrijkste boodschap van deze tekst?", "options": ["Vissen zijn niet meer gezond om te eten", "Plastic in zee is een groot probleem dat je het best kunt voorkomen", "Microplastics zijn makkelijk op te ruimen"], "correctIndex": 1, "rating": 1160, "evidenceSentence": 8 },
+      { "id": "plastic-2", "skill": "verbanden", "prompt": "Hoe kan plastic uit de zee bij mensen terechtkomen?", "options": ["Vissen krijgen het binnen en mensen eten vis", "Het waait vanaf de zee het land op", "Mensen slikken het in tijdens het zwemmen"], "correctIndex": 0, "rating": 1120, "evidenceSentence": 6 },
+      { "id": "plastic-3", "skill": "woordenschat", "prompt": "Wat betekent 'voorkomen' in de laatste zin?", "options": ["Ergens te zien zijn", "Iets opruimen als het al gebeurd is", "Ervoor zorgen dat iets niet gebeurt"], "correctIndex": 2, "rating": 1200, "evidenceSentence": 8 },
+      { "id": "plastic-4", "skill": "afleiden", "prompt": "Waarom doet ook iemand die ver van de zee woont ertoe bij dit probleem?", "options": ["Omdat hij vaker vis eet", "Omdat zijn afval via rivieren in zee kan komen", "Omdat hij minder plastic gebruikt"], "correctIndex": 1, "rating": 1240, "evidenceSentence": 2 }
+    ]
+  },
+  {
+    "id": "spreekbeurt",
+    "title": "De spreekbeurt van Sanne",
+    "paragraphs": [
+      ["Sanne had wekenlang geoefend voor haar spreekbeurt over vulkanen.", "Thuis, voor de spiegel, ging het elke keer goed.", "Maar toen ze voor de klas stond, leek haar keel dicht te zitten.", "Haar kaartjes trilden in haar hand."],
+      ["Op de achterste rij stak Yusuf zijn duim op.", "Hij was vorig jaar zelf halverwege zijn spreekbeurt gestopt.", "Sanne haalde diep adem en keek alleen nog naar hem.", "De eerste zin kwam zacht, de tweede al wat harder."],
+      ["Toen ze klaar was, had ze niet eens gemerkt dat ze haar kaartjes had laten liggen."]
+    ],
+    "questions": [
+      { "id": "spreekbeurt-1", "skill": "hoofdgedachte", "prompt": "Waar gaat dit verhaal vooral over?", "options": ["Sanne overwint haar zenuwen tijdens een spreekbeurt", "Sanne leert veel over vulkanen", "Yusuf en Sanne krijgen ruzie in de klas"], "correctIndex": 0, "rating": 1180, "evidenceSentence": 9 },
+      { "id": "spreekbeurt-2", "skill": "verbanden", "prompt": "Waarom begreep Yusuf goed hoe Sanne zich voelde?", "options": ["Hij wist ook veel over vulkanen", "Hij zat op de achterste rij", "Hij was zelf ook eens vastgelopen bij een spreekbeurt"], "correctIndex": 2, "rating": 1220, "evidenceSentence": 6 },
+      { "id": "spreekbeurt-3", "skill": "woordenschat", "prompt": "Wat wordt bedoeld met 'haar keel leek dicht te zitten'?", "options": ["Ze was verkouden", "Ze was zo zenuwachtig dat praten niet lukte", "Ze had net iets gegeten"], "correctIndex": 1, "rating": 1260, "evidenceSentence": 3 },
+      { "id": "spreekbeurt-4", "skill": "afleiden", "prompt": "Wat zegt het over Sanne dat ze haar kaartjes had laten liggen?", "options": ["Ze voelde zich zeker genoeg om zonder te praten", "Ze was vergeten waar haar spreekbeurt over ging", "Ze vond haar kaartjes niet mooi"], "correctIndex": 0, "rating": 1320, "evidenceSentence": 9 }
+    ]
+  },
+  {
+    "id": "veldhaven",
+    "title": "Een centrum zonder auto's",
+    "paragraphs": [
+      ["De stad Veldhaven besloot drie jaar geleden om auto's uit het centrum te weren.", "Winkeliers waren woedend, want zij vreesden dat hun klanten zouden wegblijven.", "De eerste maanden leek het erop dat ze gelijk kregen."],
+      ["Daarna veranderde er iets.", "Doordat de straten stiller en veiliger werden, kwamen gezinnen juist vaker naar het centrum.", "Terrassen namen de plek in van parkeervakken.", "De meeste winkels verdienen nu meer dan voorheen."],
+      ["Toch is niet iedereen tevreden.", "Mensen die slecht ter been zijn, moeten nu verder lopen, en voor hen is het centrum juist moeilijker bereikbaar geworden."]
+    ],
+    "questions": [
+      { "id": "veldhaven-1", "skill": "hoofdgedachte", "prompt": "Welke zin vat de tekst het best samen?", "options": ["Winkeliers in Veldhaven verdienen minder dan vroeger", "Terrassen zijn beter dan parkeervakken", "Een autovrij centrum bracht veel voordelen, maar niet voor iedereen"], "correctIndex": 2, "rating": 1340, "evidenceSentence": 8 },
+      { "id": "veldhaven-2", "skill": "verbanden", "prompt": "Waardoor kwamen gezinnen vaker naar het centrum?", "options": ["De straten werden stiller en veiliger", "De winkels werden goedkoper", "Er kwamen meer parkeervakken"], "correctIndex": 0, "rating": 1280, "evidenceSentence": 5 },
+      { "id": "veldhaven-3", "skill": "woordenschat", "prompt": "Wat betekent 'weren' in de eerste zin?", "options": ["Beschermen", "Niet toelaten", "Repareren"], "correctIndex": 1, "rating": 1400, "evidenceSentence": 1 },
+      { "id": "veldhaven-4", "skill": "afleiden", "prompt": "Wat kun je zeggen over de angst van de winkeliers?", "options": ["Die bleek op de lange duur grotendeels onterecht", "Die is na drie jaar alleen maar groter geworden", "Die ging over de terrassen"], "correctIndex": 0, "rating": 1420, "evidenceSentence": 7 }
+    ]
+  }
+]

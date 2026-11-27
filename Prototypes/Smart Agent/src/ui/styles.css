@@ -1,0 +1,300 @@
+:root {
+  color-scheme: light;
+  --paper: #fbf8f1;
+  --card: #ffffff;
+  --ink: #26221c;
+  --muted: #6f675a;
+  --line: #e4ddcf;
+  --accent: #2f6f5e;
+  --accent-ink: #ffffff;
+  --highlight: #ffe9a8;
+  --good: #1f7a4d;
+  --good-bg: #e0f3e8;
+  --bad: #a8402f;
+  --bad-bg: #f9e4df;
+  --hint-bg: #fff6d9;
+  --debug-bg: #23272b;
+  --debug-ink: #e6e8ea;
+  --debug-muted: #9aa3ab;
+  --debug-line: #3a4046;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: system-ui, 'Segoe UI', sans-serif;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--accent);
+}
+
+.reader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+.text {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 28px 32px;
+  font-size: 20px;
+  line-height: 1.75;
+}
+
+.text h1 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  line-height: 1.25;
+}
+
+.text p {
+  margin: 0 0 16px;
+}
+
+.sentence {
+  border-radius: 4px;
+  transition: background-color 200ms;
+}
+
+.sentence.lit {
+  background: var(--highlight);
+}
+
+.sentence sup {
+  color: var(--muted);
+  font-size: 11px;
+  margin-right: 2px;
+  user-select: none;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  position: sticky;
+  top: 16px;
+}
+
+.prompt {
+  margin: 0 0 16px;
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.options {
+  display: grid;
+  gap: 10px;
+}
+
+.option {
+  text-align: left;
+  padding: 12px 14px;
+  background: var(--paper);
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.option:hover:enabled {
+  border-color: var(--accent);
+}
+
+.option.correct {
+  background: var(--good-bg);
+  border-color: var(--good);
+}
+
+.option.wrong {
+  background: var(--bad-bg);
+  border-color: var(--bad);
+  color: var(--muted);
+}
+
+.feedback {
+  min-height: 24px;
+  margin: 14px 0;
+  line-height: 1.45;
+}
+
+.feedback p {
+  margin: 0 0 8px;
+}
+
+.good {
+  color: var(--good);
+  font-weight: 600;
+}
+
+.hint {
+  background: var(--hint-bg);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.primary {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 0;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.ghost {
+  padding: 8px 12px;
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  opacity: 0.85;
+}
+
+.ghost:disabled {
+  opacity: 0.4;
+}
+
+.debug {
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--debug-bg);
+  color: var(--debug-ink);
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.debug .muted {
+  color: var(--debug-muted);
+}
+
+.debug-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.debug h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.debug h3 {
+  margin: 12px 0 8px;
+  font-size: 13px;
+  color: var(--debug-muted);
+}
+
+.debug-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.debug table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.debug th,
+.debug td {
+  padding: 5px 8px 5px 0;
+  border-bottom: 1px solid var(--debug-line);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.debug th {
+  color: var(--debug-muted);
+  font-weight: 500;
+}
+
+.debug .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.debug tr.recent td {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.debug dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  margin: 0;
+}
+
+.debug dt {
+  color: var(--debug-muted);
+}
+
+.debug dd {
+  margin: 0;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+@media (max-width: 860px) {
+  .reader,
+  .debug-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .text {
+    padding: 20px;
+    font-size: 18px;
+  }
+
+  .card {
+    position: static;
+  }
+}
