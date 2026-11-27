@@ -1,4 +1,4 @@
-# Tamagotchi
+# Pagi
 
 ## Concept
 Een digitaal huisdier dat de leerling verzorgt door te lezen. Het huisdier "eet" en groeit wanneer de leerling teksten leest én laat zien dat die begrepen zijn. Zo wordt dagelijks lezen een gewoonte waar de leerling zelf zin in heeft.

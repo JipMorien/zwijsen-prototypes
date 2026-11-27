@@ -15,7 +15,7 @@ Nederlandse kinderen lezen steeds slechter en begrijpen steeds minder van wat ze
 | Prototype | Idee in het kort | Onderzoeksvraag |
 |---|---|---|
 | [Smart Agent](Prototypes/Smart%20Agent/) | AI-leesmaatje dat meeleest, vragen stelt en de moeilijkheid aanpast | Verbetert een gepersonaliseerd AI-leesmaatje het tekstbegrip? |
-| [Tamagotchi](Prototypes/Tamagotchi/) | Digitaal huisdier dat groeit wanneer de leerling teksten leest en begrijpt | Lezen leerlingen vaker uit zichzelf met een huisdier dat van lezen afhangt? |
+| [Pagi](Prototypes/Pagi/) | Digitaal huisdier dat groeit wanneer de leerling teksten leest en begrijpt | Lezen leerlingen vaker uit zichzelf met een huisdier dat van lezen afhangt? |
 | [TellTale](Prototypes/TellTale/) | Interactieve keuzeverhalen waarin begrip bepaalt hoe het verhaal verdergaat | Geeft een keuzeverhaal beter begrip en meer leesplezier dan losse vragen? |
 | [Reward-based system](Prototypes/Rewardbases%20system/) | Punten, badges, streaks en klasdoelen die beloond worden op begrip | Wat doet een beloningssysteem met leesmotivatie én tekstbegrip? |
 
