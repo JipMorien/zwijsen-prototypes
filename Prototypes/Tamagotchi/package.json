@@ -11,7 +11,7 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "lint": "eslint . --max-warnings 0",
-    "format": "prettier --write ."
+    "format": "prettier --write src e2e examples \"*.config.ts\""
   },
   "dependencies": {
     "react": "^18.3.1",
