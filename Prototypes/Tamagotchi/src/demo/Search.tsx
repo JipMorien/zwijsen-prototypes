@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { Fragment, useState, type KeyboardEvent } from "react";
 import type { PagiApi } from "../pagi";
-import { lesson, type Sentence } from "./lesson";
+import { demoText, lesson, type Sentence } from "./lesson";
 
 interface SearchProps {
   send: PagiApi["emit"];
@@ -11,65 +11,79 @@ export function Search({ send, onDone }: SearchProps) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [foundIds, setFoundIds] = useState<string[]>([]);
   const [missedIds, setMissedIds] = useState<string[]>([]);
-  const finished = questionIndex >= lesson.questions.length;
   const question = lesson.questions[questionIndex];
+  const answered = foundIds.includes(question.answer);
+  const isLastQuestion = questionIndex === lesson.questions.length - 1;
 
-  const tapSentence = (sentence: Sentence) => {
-    if (finished || foundIds.includes(sentence.id)) return;
-    if (sentence.id !== question.answerId) {
-      setMissedIds([...missedIds, sentence.id]);
+  const tapSentence = ([id]: Sentence) => {
+    if (answered) return;
+    if (id === question.answer) {
+      setFoundIds([...foundIds, id]);
+      send("evidence_found", { signal: question.signal });
+    } else {
+      setMissedIds([...missedIds, id]);
       send("evidence_missed", { signal: question.signal });
-      return;
-    }
-    setFoundIds([...foundIds, sentence.id]);
-    setMissedIds([]);
-    send("evidence_found", { signal: question.signal });
-    const nextIndex = questionIndex + 1;
-    setQuestionIndex(nextIndex);
-    if (nextIndex < lesson.questions.length) {
-      const nextQuestion = lesson.questions[nextIndex];
-      send("structure_question", {
-        question: nextQuestion.question,
-        signal: nextQuestion.signal,
-      });
     }
   };
 
-  const markOf = (sentence: Sentence) => {
-    if (foundIds.includes(sentence.id)) return "sentence found";
-    if (missedIds.includes(sentence.id)) return "sentence missed";
-    return "sentence";
+  const handleSentenceKey = (event: KeyboardEvent, sentence: Sentence) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    tapSentence(sentence);
+  };
+
+  const goToNextQuestion = () => {
+    if (isLastQuestion) {
+      onDone();
+      return;
+    }
+    const nextQuestion = lesson.questions[questionIndex + 1];
+    setQuestionIndex(questionIndex + 1);
+    setMissedIds([]);
+    send("structure_question", {
+      question: nextQuestion.text,
+      signal: nextQuestion.signal,
+    });
+  };
+
+  const stateOf = ([id]: Sentence) => {
+    if (foundIds.includes(id)) return "found";
+    if (missedIds.includes(id)) return "missed";
+    return undefined;
   };
 
   return (
-    <article className="search">
-      <p className="eyebrow">{lesson.label} · Speurtocht</p>
-      <h2>{lesson.title}</h2>
-      {finished ? (
-        <div className="search-done">
-          <p>Klaar! Je hebt alle antwoorden gevonden.</p>
-          <button type="button" className="primary" onClick={onDone}>
-            Terug naar het overzicht
+    <article>
+      <h1 className="page-title">{lesson.title}</h1>
+      <section className="question-card">
+        <p className="question-label">{demoText.searchLabel}</p>
+        <p className="question-text">{question.text}</p>
+        <p className="meta">{demoText.searchHelp}</p>
+        {missedIds.length > 0 && !answered && (
+          <p className="question-wrong">{demoText.wrongPlace}</p>
+        )}
+        {answered && (
+          <button type="button" className="button" onClick={goToNextQuestion}>
+            {isLastQuestion ? demoText.finishLesson : demoText.nextQuestion}
           </button>
-        </div>
-      ) : (
-        <p className="search-question">
-          Vraag {questionIndex + 1}: {question.question}
-          <span className="search-help">Tik op de zin met het antwoord.</span>
-        </p>
-      )}
+        )}
+      </section>
       <div className="reading-text" data-pagi-perch="reading">
         {lesson.pages.map((sentences, pageIndex) => (
           <p key={pageIndex}>
             {sentences.map((sentence) => (
-              <button
-                key={sentence.id}
-                type="button"
-                className={markOf(sentence)}
-                onClick={() => tapSentence(sentence)}
-              >
-                {sentence.text}
-              </button>
+              <Fragment key={sentence[0]}>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  className="sentence"
+                  data-state={stateOf(sentence)}
+                  onClick={() => tapSentence(sentence)}
+                  onKeyDown={(event) => handleSentenceKey(event, sentence)}
+                >
+                  {sentence[1]}
+                </span>{" "}
+              </Fragment>
             ))}
           </p>
         ))}

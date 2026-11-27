@@ -1,62 +1,87 @@
-export interface Sentence {
-  id: string;
-  text: string;
-}
-
-export interface SearchQuestion {
-  structure: "oorzaak" | "tijd";
-  question: string;
-  signal: string;
-  answerId: string;
-}
-
 export const lesson = {
   label: "Les 12",
   title: "De oude sleutel",
+  avi: "AVI E5",
   pages: [
     [
-      { id: "s1", text: "Op de zolder van oma staat een oude houten kist." },
-      { id: "s2", text: "Noor wil al heel lang weten wat erin zit." },
-      {
-        id: "s3",
-        text: "Toen ze op een regenachtige middag de zolder opruimde, vond ze onder een stapel kranten een kleine, roestige sleutel.",
-      },
+      ["s1", "Sam vond een oude sleutel onder de trap."],
+      ["s2", "Hij was zwaar en een beetje roestig."],
+      ["s3", "Eerst poetste Sam de sleutel schoon met een doek."],
+      ["s4", "Daarna zag hij een letter op het handvat: een O."],
     ],
     [
-      { id: "s4", text: "Noor rende met de sleutel naar de kist." },
-      {
-        id: "s5",
-        text: "Ze stak hem in het slot en draaide, maar er gebeurde niets.",
-      },
-      {
-        id: "s6",
-        text: "De kist bleef dicht, omdat het slot helemaal vastgeroest was.",
-      },
-      { id: "s7", text: "Noor zuchtte en liep naar beneden." },
+      ["s5", "‘O van opa!’ riep Sam."],
+      [
+        "s6",
+        "Omdat opa een grote kist op zolder had, dacht Sam dat de sleutel daarvan was.",
+      ],
+      ["s7", "Samen met zijn zus Noor klom hij de smalle trap op."],
+      ["s8", "Het was stoffig en in de hoek hing een spinnenweb."],
     ],
     [
-      { id: "s8", text: "Oma moest lachen toen ze het verhaal hoorde." },
-      { id: "s9", text: "Ze pakte een flesje olie uit de keukenla." },
-      { id: "s10", text: "Samen druppelden ze wat olie in het slot." },
-      { id: "s11", text: "Met een zachte klik sprong de kist open." },
-      {
-        id: "s12",
-        text: "Bovenin lag een brief die oma schreef toen ze net zo oud was als Noor.",
-      },
+      ["s9", "Het slot van de kist zat vast."],
+      ["s10", "Daarom deed Noor een druppel olie op de sleutel."],
+      ["s11", "Klik! Het deksel ging krakend open."],
+      [
+        "s12",
+        "Doordat de kist zo lang dicht had gezeten, rook alles naar oud papier.",
+      ],
+      [
+        "s13",
+        "In de kist lag een schrift: ‘Mijn grootste avontuur, door opa Kees.’",
+      ],
     ],
-  ] satisfies Sentence[][],
+  ],
   questions: [
     {
-      structure: "oorzaak",
-      question: "Waarom ging de kist niet open?",
+      answer: "s6",
       signal: "omdat",
-      answerId: "s6",
+      text: "Waarom dacht Sam dat de sleutel van de kist op zolder was?",
     },
     {
-      structure: "tijd",
-      question: "Wanneer vond Noor de sleutel?",
-      signal: "toen",
-      answerId: "s3",
+      answer: "s3",
+      signal: "eerst",
+      text: "Wat deed Sam vóórdat hij de letter op de sleutel zag?",
     },
-  ] satisfies SearchQuestion[],
+  ],
+} as const;
+
+export const toets = [
+  {
+    question: "1. Wat is een kapitein?",
+    options: ["De baas van een schip", "Een soort vis"],
+  },
+  {
+    question: "2. Wat doet een vuurtoren?",
+    options: ["Schepen waarschuwen", "Vis vangen"],
+  },
+] as const;
+
+export type Sentence = (typeof lesson.pages)[number][number];
+
+export const demoText = {
+  brand: "Leesplein",
+  brandNote: "dummy leesomgeving",
+  nav: ["Mijn lessen", "Boekenkast", "Resultaten"],
+  pupil: "Sem · groep 5",
+  greeting: "Goedemiddag",
+  lessonMeta: `${lesson.label} · ${lesson.avi}`,
+  lessonSummary: `${lesson.pages.length} pagina's · speurtocht met ${lesson.questions.length} vragen`,
+  startLesson: "Start les",
+  toetsMeta: "Toets · Thema Zee",
+  toetsTitle: "Woordenschat-toets",
+  startToets: "Start toets",
+  submitToets: "Toets inleveren",
+  backToLessons: "← Mijn lessen",
+  pageOf: (page: number, total: number) => `Pagina ${page} van ${total}`,
+  nextPage: "Volgende pagina",
+  toSearch: "Naar de speurtocht",
+  searchLabel: "Pagi's speurtocht",
+  searchHelp: "Tik op de zin waar het antwoord staat.",
+  wrongPlace: "Dat is niet de goede plek. Kijk naar de tip van Pagi.",
+  nextQuestion: "Volgende vraag",
+  finishLesson: "Les afronden",
+  devbarLabel: "Demo-bediening",
+  nextDay: "+1 schooldag",
+  reset: "Opnieuw",
 };

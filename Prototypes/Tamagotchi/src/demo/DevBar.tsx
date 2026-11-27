@@ -1,8 +1,10 @@
 import type { PagiApi } from "../pagi";
+import { demoText } from "./lesson";
 
 export interface LoggedEvent {
   id: number;
-  text: string;
+  type: string;
+  payload?: string;
 }
 
 interface DevBarProps {
@@ -12,20 +14,21 @@ interface DevBarProps {
 
 export function DevBar({ send, eventLog }: DevBarProps) {
   return (
-    <aside className="devbar" aria-label="Demo-bediening">
-      <p className="devbar-title">Demo-bediening (geen onderdeel van de app)</p>
+    <aside className="devbar" aria-label={demoText.devbarLabel}>
       <div className="devbar-actions">
         <button type="button" onClick={() => send("demo_day")}>
-          +1 schooldag
+          {demoText.nextDay}
         </button>
         <button type="button" onClick={() => send("demo_reset")}>
-          Opnieuw
+          {demoText.reset}
         </button>
       </div>
-      <p className="devbar-title">Laatste events naar Pagi</p>
       <ol className="devbar-log">
         {eventLog.map((entry) => (
-          <li key={entry.id}>{entry.text}</li>
+          <li key={entry.id}>
+            <span className="devbar-event">{entry.type}</span>
+            {entry.payload && ` ${entry.payload}`}
+          </li>
         ))}
       </ol>
     </aside>

@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import type { PagiApi, View } from "../pagi";
 import { DevBar, type LoggedEvent } from "./DevBar";
-import { lesson } from "./lesson";
+import { demoText, lesson } from "./lesson";
+import { Overview } from "./Overview";
 import { Reader } from "./Reader";
 import { Search } from "./Search";
 import { Toets } from "./Toets";
@@ -15,7 +16,7 @@ const PAGI_VIEW: Record<Screen, View> = {
   toets: "toets",
 };
 
-const EVENT_LOG_LENGTH = 8;
+const EVENT_LOG_LENGTH = 6;
 
 export function App() {
   const [screen, setScreen] = useState<Screen>("overview");
@@ -24,8 +25,11 @@ export function App() {
 
   const send: PagiApi["emit"] = (type, payload) => {
     window.Pagi?.emit(type, payload);
-    const text = payload ? `${type} ${JSON.stringify(payload)}` : type;
-    const entry = { id: nextLogId.current++, text };
+    const entry = {
+      id: nextLogId.current++,
+      type,
+      payload: payload && JSON.stringify(payload),
+    };
     setEventLog((log) => [entry, ...log].slice(0, EVENT_LOG_LENGTH));
   };
 
@@ -43,7 +47,7 @@ export function App() {
     show("search");
     const [firstQuestion] = lesson.questions;
     send("structure_question", {
-      question: firstQuestion.question,
+      question: firstQuestion.text,
       signal: firstQuestion.signal,
     });
   };
@@ -59,38 +63,38 @@ export function App() {
   };
 
   return (
-    <div className="app">
+    <>
+      <DevBar send={send} eventLog={eventLog} />
       <header className="app-header">
-        <h1>Leesplein (dummy)</h1>
+        <p className="brand">
+          <strong>{demoText.brand}</strong>
+          <span>{demoText.brandNote}</span>
+        </p>
+        <nav className="nav">
+          {demoText.nav.map((item, index) => (
+            <span key={item} data-current={index === 0 || undefined}>
+              {item}
+            </span>
+          ))}
+        </nav>
+        <p className="pupil">{demoText.pupil}</p>
       </header>
       <main className="app-main">
         {screen === "overview" && (
-          <div className="cards">
-            <section className="card">
-              <p className="eyebrow">{lesson.label}</p>
-              <h2>{lesson.title}</h2>
-              <button type="button" className="primary" onClick={openLesson}>
-                Start les
-              </button>
-            </section>
-            <section className="card">
-              <p className="eyebrow">Toets</p>
-              <h2>{lesson.title}</h2>
-              <button type="button" className="primary" onClick={openToets}>
-                Start toets
-              </button>
-            </section>
-          </div>
+          <Overview onStartLesson={openLesson} onStartToets={openToets} />
         )}
         {screen === "reading" && (
-          <Reader send={send} onFinished={startSearch} />
+          <Reader
+            send={send}
+            onExit={() => show("overview")}
+            onFinished={startSearch}
+          />
         )}
         {screen === "search" && (
           <Search send={send} onDone={() => show("overview")} />
         )}
         {screen === "toets" && <Toets onSubmit={submitToets} />}
       </main>
-      <DevBar send={send} eventLog={eventLog} />
-    </div>
+    </>
   );
 }
