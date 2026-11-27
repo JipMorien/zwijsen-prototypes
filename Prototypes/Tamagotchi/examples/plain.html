@@ -18,11 +18,17 @@
     <button onclick="Pagi.emit('evidence_found', { signal: 'omdat' })">
       evidence_found
     </button>
+    <button onclick="Pagi.emit('evidence_missed', { signal: 'omdat' })">
+      evidence_missed
+    </button>
+    <button onclick="Pagi.emit('quiet', { on: true })">quiet aan</button>
+    <button onclick="Pagi.emit('quiet', { on: false })">quiet uit</button>
     <button onclick="Pagi.emit('demo_day')">demo_day</button>
+    <button onclick="Pagi.emit('demo_reset')">demo_reset</button>
     <script src="../dist/pagi-widget.js"></script>
     <script>
       Pagi.emit("structure_question", {
-        question: "Waarom ging de kist niet open?",
+        question: "Waarom dacht Sam dat de sleutel van de kist op zolder was?",
         signal: "omdat",
       });
     </script>
