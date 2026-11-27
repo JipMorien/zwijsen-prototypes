@@ -43,7 +43,6 @@ h2 {
   font-size: 22px;
 }
 
-/* Bottom padding keeps content clear of Pagi docked in the corner. */
 .app-main {
   max-width: 720px;
   margin: 0 auto;
@@ -81,7 +80,6 @@ h2 {
   font-weight: 600;
 }
 
-/* Room above the text for Pagi to sit on its top edge. */
 .reading-text {
   margin: 100px 0 20px;
   padding: 16px;

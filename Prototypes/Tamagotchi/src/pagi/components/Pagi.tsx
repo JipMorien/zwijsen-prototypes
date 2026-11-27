@@ -23,8 +23,6 @@ interface TimedAction {
   now: number;
 }
 
-// The ids change only when the reducer returns something new to say or play,
-// so the bubble timer and the animation restart exactly then.
 function advance(screen: Screen, { action, now }: TimedAction): Screen {
   const result = reducer(screen.state, action, now);
   return {

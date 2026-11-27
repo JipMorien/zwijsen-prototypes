@@ -1,6 +1,5 @@
 export type View = "overview" | "reading" | "toets";
 
-/** All needs run from 0 to 100; higher is better for Pagi. */
 export interface Needs {
   food: number;
   energy: number;
@@ -22,13 +21,11 @@ export interface PagiState {
   pageOpenedAt: number | null;
 }
 
-/** The part of the state that survives a reload. */
 export type SavedState = Pick<
   PagiState,
   "needs" | "wordBites" | "stars" | "sleeping"
 >;
 
-/** Events a host app sends through `window.Pagi.emit`. */
 export type PagiEvent =
   | { type: "view_changed"; view: View }
   | { type: "page_opened" }
@@ -40,7 +37,6 @@ export type PagiEvent =
   | { type: "demo_day" }
   | { type: "demo_reset" };
 
-/** Actions that come from Pagi's own panel, never from the host. */
 export type PanelAction =
   { type: "feed" } | { type: "pet" } | { type: "panel_changed"; open: boolean };
 

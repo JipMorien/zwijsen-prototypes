@@ -34,8 +34,6 @@ function isSavedState(value: unknown): value is SavedState {
   );
 }
 
-// Storage can be blocked (private mode, school policies) or full; Pagi then
-// keeps working in memory for the rest of the visit.
 export const localStorageAdapter: PagiStorage = {
   load() {
     try {
@@ -50,9 +48,7 @@ export const localStorageAdapter: PagiStorage = {
   save(state) {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      // Losing one save is fine; the state stays in memory.
-    }
+    } catch {}
   },
 };
 

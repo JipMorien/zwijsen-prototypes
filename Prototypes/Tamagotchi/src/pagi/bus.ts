@@ -27,7 +27,6 @@ function isView(value: unknown): value is View {
   return VIEWS.some((view) => view === value);
 }
 
-// Host apps are not type-checked against Pagi, so every field is verified.
 function parsePagiEvent(detail: unknown): PagiEvent | null {
   const value = readDetail(detail);
   if (typeof value !== "object" || value === null || !("type" in value)) {

@@ -41,7 +41,6 @@ function readPage(state: PagiState, now: number): PagiResult {
         energy: clampNeed(state.needs.energy + ENERGY_PER_PAGE),
       },
       sleeping: false,
-      // Cleared so a second page_read for the same page earns nothing.
       pageOpenedAt: null,
     },
     say: state.sleeping ? copy.wokeUp : copy.pageRead,

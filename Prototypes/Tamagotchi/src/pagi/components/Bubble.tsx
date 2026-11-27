@@ -19,7 +19,6 @@ export function Bubble({ message, messageId }: BubbleProps) {
 
   const visible = message !== undefined && expiredMessageId !== messageId;
 
-  // The live region stays mounted so screen readers announce each new message.
   return (
     <div className="pagi-bubble" aria-live="polite">
       {visible && <p className="pagi-bubble-text">{message}</p>}

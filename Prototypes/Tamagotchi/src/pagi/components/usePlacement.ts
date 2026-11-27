@@ -17,7 +17,6 @@ function findPlacement(): Placement | null {
   if (!perch) return null;
   const rect = perch.getBoundingClientRect();
   const top = rect.top - SITTING_HEIGHT + FEET_OVERLAP;
-  // Once the top edge scrolls away he would float over the text, so he docks.
   if (top < VIEWPORT_MARGIN || top > window.innerHeight) return null;
   return {
     left: Math.max(
@@ -28,7 +27,6 @@ function findPlacement(): Placement | null {
   };
 }
 
-/** Where Pagi sits on the reading text, or null when he should dock. */
 export function usePlacement(wantsToSit: boolean): Placement | null {
   const [placement, setPlacement] = useState<Placement | null>(null);
 

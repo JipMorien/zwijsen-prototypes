@@ -25,8 +25,6 @@ export function mountPagi({
   document.body.append(host);
 
   const root = createRoot(container);
-  // A synchronous first render also runs Pagi's effects, so the event
-  // listener is in place before the host calls Pagi.emit.
   flushSync(() => root.render(<Pagi storage={storage} />));
   window.Pagi = { emit: emitPagiEvent };
 

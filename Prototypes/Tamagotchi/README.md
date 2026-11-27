@@ -1,4 +1,4 @@
-# Pagi
+# Tamagotchi
 
 ## Concept
 Een digitaal huisdier dat de leerling verzorgt door te lezen. Het huisdier "eet" en groeit wanneer de leerling teksten leest én laat zien dat die begrepen zijn. Zo wordt dagelijks lezen een gewoonte waar de leerling zelf zin in heeft.
@@ -17,7 +17,7 @@ Lezen leerlingen vaker en uit zichzelf wanneer hun leesvoortgang gekoppeld is aa
 - Geen schuldgevoel of straf bij niet lezen.
 
 ## Wat het doet
-Pagi is een leeshuisdier dat als widget bovenop een leesapp staat.
+Het huisdier heet Pagi, van "pagina". Hij staat als widget bovenop een leesapp.
 
 - Lees je een pagina rustig (minstens 4 seconden), dan krijg je een woordbrokje.
 - Vind je in de speurtocht de zin met het antwoord, dan krijg je een ster.

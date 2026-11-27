@@ -1,8 +1,3 @@
-/*
- * The page's inherited styles still reach the shadow root through the host,
- * so the root resets everything and only px units are used (rem follows the
- * page's html font size).
- */
 .pagi {
   all: initial;
   position: fixed;
