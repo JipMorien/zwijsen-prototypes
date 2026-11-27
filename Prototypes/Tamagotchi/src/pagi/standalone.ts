@@ -1,7 +1,8 @@
 import { mountPagi } from "./mount";
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => mountPagi());
-} else {
+// A script tag in <head> runs before <body> exists.
+if (document.body) {
   mountPagi();
+} else {
+  document.addEventListener("DOMContentLoaded", () => mountPagi());
 }

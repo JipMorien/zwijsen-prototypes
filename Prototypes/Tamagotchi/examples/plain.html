@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pagi op een gewone pagina</title>
+    <!-- Deliberately hostile page styles: Pagi must look the same. -->
+    <style>
+      * {
+        color: red;
+        font-size: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Een gewone pagina zonder React. Pagi komt uit één scriptbestand.</p>
+    <button onclick="Pagi.emit('page_opened')">page_opened</button>
+    <button onclick="Pagi.emit('page_read')">page_read</button>
+    <button onclick="Pagi.emit('evidence_found', { signal: 'omdat' })">
+      evidence_found
+    </button>
+    <button onclick="Pagi.emit('demo_day')">demo_day</button>
+    <script src="../dist/pagi-widget.js"></script>
+    <script>
+      Pagi.emit("structure_question", {
+        question: "Waarom ging de kist niet open?",
+        signal: "omdat",
+      });
+    </script>
+  </body>
+</html>
