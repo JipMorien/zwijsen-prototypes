@@ -1,0 +1,306 @@
+/*
+ * The page's inherited styles still reach the shadow root through the host,
+ * so the root resets everything and only px units are used (rem follows the
+ * page's html font size).
+ */
+.pagi {
+  all: initial;
+  position: fixed;
+  display: block;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #1f2a5a;
+  text-align: left;
+}
+
+.pagi[hidden] {
+  display: none;
+}
+
+.pagi *,
+.pagi *::before,
+.pagi *::after {
+  box-sizing: border-box;
+}
+
+.pagi--docked {
+  right: 16px;
+  bottom: 16px;
+}
+
+.pagi button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.pagi button:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.pagi-avatar {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+}
+
+.pagi-bob {
+  display: block;
+  animation: pagi-bob 3s ease-in-out infinite;
+}
+
+.pagi-svg {
+  display: block;
+  width: 112px;
+  height: 148px;
+  overflow: visible;
+  --pagi-body: #fff4d6;
+  --pagi-fold: #f2dfaf;
+}
+
+.pagi--sitting .pagi-svg {
+  width: 84px;
+  height: 111px;
+}
+
+.pagi-svg--slaapt {
+  --pagi-body: #f5f1e8;
+  --pagi-fold: #e4ddcf;
+}
+
+.pagi-svg--juich {
+  animation: pagi-juich 0.7s ease-out;
+}
+
+.pagi-body {
+  fill: var(--pagi-body);
+  stroke: #1f2a5a;
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.pagi-fold {
+  fill: var(--pagi-fold);
+  stroke: #1f2a5a;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.pagi-foot,
+.pagi-arm {
+  fill: #1f2a5a;
+}
+
+.pagi-text-lines path {
+  stroke: #d9c48f;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.pagi-cheek {
+  fill: #f6a5b0;
+  opacity: 0.6;
+}
+
+.pagi-eye {
+  fill: #ffffff;
+  stroke: #1f2a5a;
+  stroke-width: 3;
+}
+
+.pagi-pupil {
+  fill: #1f2a5a;
+}
+
+.pagi-shine {
+  fill: #ffffff;
+}
+
+.pagi-line,
+.pagi-line path {
+  fill: none;
+  stroke: #1f2a5a;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.pagi-zz {
+  fill: #1f2a5a;
+  font-family: inherit;
+  font-weight: 700;
+}
+
+.pagi-bubble-text {
+  position: absolute;
+  right: calc(100% + 10px);
+  bottom: 50%;
+  width: max-content;
+  max-width: min(240px, calc(100vw - 150px));
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #1f2a5a;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.pagi-bubble-text::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  bottom: 14px;
+  border-width: 8px 0 8px 10px;
+  border-style: solid;
+  border-color: transparent transparent transparent #1f2a5a;
+}
+
+.pagi-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  width: min(280px, calc(100vw - 32px));
+  padding: 16px;
+  border: 3px solid #1f2a5a;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(31, 42, 90, 0.2);
+}
+
+.pagi-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.pagi-name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.pagi-close {
+  padding: 6px 10px;
+  border: 2px solid #1f2a5a;
+  border-radius: 10px;
+  background: #ffffff;
+  font-size: 14px;
+}
+
+.pagi-stats {
+  display: flex;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.pagi-stat {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #eef1fb;
+}
+
+.pagi-stat dt {
+  font-size: 13px;
+}
+
+.pagi-stat dd {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.pagi-note {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #fff4d6;
+  font-size: 14px;
+}
+
+.pagi-need {
+  margin-bottom: 10px;
+}
+
+.pagi-need-label {
+  display: block;
+  font-size: 14px;
+}
+
+.pagi-meter {
+  height: 12px;
+  border-radius: 6px;
+  background: #e3e7f3;
+  overflow: hidden;
+}
+
+.pagi-meter-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: #3fa66b;
+  transition: width 0.4s ease;
+}
+
+.pagi-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.pagi-action {
+  flex: 1;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #1f2a5a;
+  font-weight: 700;
+}
+
+.pagi .pagi-action {
+  color: #ffffff;
+}
+
+@keyframes pagi-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pagi-juich {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-26px) scale(1.06);
+  }
+  70% {
+    transform: translateY(0) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pagi-bob,
+  .pagi-svg--juich {
+    animation: none;
+  }
+
+  .pagi-meter-fill {
+    transition: none;
+  }
+}

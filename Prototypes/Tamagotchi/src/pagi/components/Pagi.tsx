@@ -1,0 +1,102 @@
+import { useCallback, useEffect, useReducer, useRef } from "react";
+import type { KeyboardEvent } from "react";
+import { listenForPagiEvents } from "../bus";
+import { copy } from "../copy";
+import { moodOf, reducer } from "../reducer";
+import { restoreState, toSavedState, type PagiStorage } from "../storage";
+import type { Animation, PagiAction, PagiState } from "../types";
+import { Avatar } from "./Avatar";
+import { Bubble } from "./Bubble";
+import { Panel } from "./Panel";
+import { usePlacement } from "./usePlacement";
+
+interface Screen {
+  state: PagiState;
+  say?: string;
+  sayId: number;
+  animation?: Animation;
+  animationId: number;
+}
+
+interface TimedAction {
+  action: PagiAction;
+  now: number;
+}
+
+// The ids change only when the reducer returns something new to say or play,
+// so the bubble timer and the animation restart exactly then.
+function advance(screen: Screen, { action, now }: TimedAction): Screen {
+  const result = reducer(screen.state, action, now);
+  return {
+    state: result.state,
+    say: result.say ?? screen.say,
+    sayId: result.say ? screen.sayId + 1 : screen.sayId,
+    animation: result.animation ?? screen.animation,
+    animationId: result.animation ? screen.animationId + 1 : screen.animationId,
+  };
+}
+
+function openScreen(storage: PagiStorage): Screen {
+  return { state: restoreState(storage.load()), sayId: 0, animationId: 0 };
+}
+
+export function Pagi({ storage }: { storage: PagiStorage }) {
+  const [screen, dispatch] = useReducer(advance, storage, openScreen);
+  const { state } = screen;
+  const avatarButton = useRef<HTMLButtonElement>(null);
+  const placement = usePlacement(state.view === "reading" && !state.panelOpen);
+
+  const send = useCallback(
+    (action: PagiAction) => dispatch({ action, now: Date.now() }),
+    [],
+  );
+
+  useEffect(() => listenForPagiEvents(send), [send]);
+
+  useEffect(() => storage.save(toSavedState(state)), [storage, state]);
+
+  const closePanel = () => {
+    send({ type: "panel_changed", open: false });
+    avatarButton.current?.focus();
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && state.panelOpen) closePanel();
+  };
+
+  return (
+    <div
+      className={placement ? "pagi pagi--sitting" : "pagi pagi--docked"}
+      style={placement ?? undefined}
+      hidden={state.quiet}
+      onKeyDown={handleKeyDown}
+    >
+      <Bubble message={screen.say} messageId={screen.sayId} />
+      {state.panelOpen && (
+        <Panel
+          state={state}
+          onFeed={() => send({ type: "feed" })}
+          onPet={() => send({ type: "pet" })}
+          onClose={closePanel}
+        />
+      )}
+      <button
+        ref={avatarButton}
+        type="button"
+        className="pagi-avatar"
+        aria-label={copy.avatarLabel}
+        aria-expanded={state.panelOpen}
+        onClick={() => send({ type: "panel_changed", open: !state.panelOpen })}
+      >
+        <span className="pagi-bob">
+          <Avatar
+            key={screen.animationId}
+            mood={moodOf(state)}
+            lookingDown={placement !== null}
+            animation={screen.animation}
+          />
+        </span>
+      </button>
+    </div>
+  );
+}

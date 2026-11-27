@@ -1,10 +1,38 @@
+import { flushSync } from "react-dom";
+import { createRoot } from "react-dom/client";
+import { emitPagiEvent } from "./bus";
+import { Pagi } from "./components/Pagi";
+import styles from "./components/pagi.css?inline";
+import { localStorageAdapter, type PagiStorage } from "./storage";
+
 const HOST_STYLE =
   "position:fixed;inset:auto 0 0 auto;width:0;height:0;z-index:2147483647";
 
-export function mountPagi(): () => void {
+export interface MountOptions {
+  storage?: PagiStorage;
+}
+
+export function mountPagi({
+  storage = localStorageAdapter,
+}: MountOptions = {}): () => void {
   const host = document.createElement("div");
   host.style.cssText = HOST_STYLE;
-  host.attachShadow({ mode: "open" });
+  const shadow = host.attachShadow({ mode: "open" });
+  const style = document.createElement("style");
+  style.textContent = styles;
+  const container = document.createElement("div");
+  shadow.append(style, container);
   document.body.append(host);
-  return () => host.remove();
+
+  const root = createRoot(container);
+  // A synchronous first render also runs Pagi's effects, so the event
+  // listener is in place before the host calls Pagi.emit.
+  flushSync(() => root.render(<Pagi storage={storage} />));
+  window.Pagi = { emit: emitPagiEvent };
+
+  return () => {
+    root.unmount();
+    host.remove();
+    delete window.Pagi;
+  };
 }
